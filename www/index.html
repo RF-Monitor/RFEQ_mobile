@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/settingPage.css">
+        <link rel="stylesheet" href="css/leaflet.css" />
+        <script src="js/leaflet/leaflet.js"></script>
+        <script src="js/jquery/jquery.js"></script>
+        <title>RF-monitor</title>
+    </head>
+    <style>
+        body{
+            height: 100%;
+            overflow: hidden;
+        }
+        .map{
+            height: 100%;
+            overflow: hidden;
+            z-index: 15;
+            height: 100vh;
+            width: 100%;
+            position:absolute;
+            top:0;
+            left:0;
+            z-index: 1;
+        }
+        
+        .nav_main {
+            position: absolute;
+            bottom: 60px; /* 剛好藏在 navbar 上面 */
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.25);
+            transform: translateY(calc(100% - 50px)); /* 一開始完全收回 */
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav_main.open {
+            transform: translateY(0); /* 展開 */
+            height: 40%;
+        }
+
+        .eew_list{
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        /* drag handle */
+        .drag_handle {
+            width: 60px;
+            height: 6px;
+            background: #ccc;
+            border-radius: 3px;
+            margin: 10px auto;
+            /*position: absolute;
+            bottom: 50px;  
+            left: 0;
+            right: 0;*/
+            z-index: 15;
+            cursor: pointer;
+        }
+
+        .navbar{
+            /*margin: 20px;*/
+            width: 100%;
+            display: flex;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            flex-wrap: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            background-color: white;
+            z-index: 20;
+        }
+
+        .navitem{
+            border-bottom: solid;
+            cursor: pointer; 
+            margin-bottom: 3px;
+            border-bottom-color: white;
+            margin-right: 15px;
+            width:33.3%
+        }
+        
+        .eew_tile{
+            border: solid 0px;
+            border-color: black;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            margin: 20px;
+            padding: 20px;
+            padding-top: 10px;
+        }
+        .eew_title{
+
+        }
+        .local_expect{
+            display: flex;
+        }
+        .local_expect_shindo{
+            display: flex;
+            width: 50%;
+            border-right: 1px solid;
+        }
+        .local_expect_time{
+            display: flex;
+            width: 50%;
+        }
+        .eew_content{
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        .eew_maxShindo{
+            width:20%;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+        .eew_details{
+            width:80%;
+        }
+
+        .report_content{
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        .report_maxShindo{
+            width:20%;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+        .report_details{
+            width:60%;
+        }
+        .report_scale{
+            display: flex;
+            width:20%;
+        }
+    </style>
+    <body style="font-family: 微軟正黑體;">
+        <div id="page1" class="app">
+                <div id='mapid' class="map"></div>
+                <div class="nav_main">
+                    <div class="drag_handle"></div>
+                    <div class="eew_list">
+                        <div id="eew">
+                            <div id="no_eew" class="eew_tile" style="display: none;">
+                                <h3>現在沒有地震速報</h3>
+                            </div>
+                            <div class="eew_tile">
+                                <div class="local_expect">
+                                    <div class="local_expect_shindo">
+                                        <p style="margin-left: 10px;">預計震度:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">5強</h1>
+                                        </div>
+                                    </div>
+                                    <div class="local_expect_time">
+                                        <p style="margin-left: 10px;">剩餘秒數:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">3</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="eew_title">
+                                    <h3 style="margin-bottom: 0;">緊急地震速報(台灣CWA)</h3>
+                                </div>
+                                <div class="eew_content">
+                                    <div class="eew_maxShindo">
+                                        <h3 align="center" style="margin: 0;">最大震度</h3>
+                                        <img src="img/shindo/7.png" style="width:100%;">
+                                    </div>
+                                    <div class="eew_details">
+                                        <h1 style="margin-bottom: 0;">臺灣東部海域 地震</h1>
+                                        <p>2025-11-21 20:11:50</p>
+                                        <div style="display: flex;flex-wrap: nowrap;">
+                                            <div style="width: 50%;">
+                                                <h1 align="left" style="margin-top: 10px;">M7.1</h1>
+                                            </div>
+                                            <div style="width: 50%;">
+                                                <h1 align="right" style="margin-top: 10px;">10KM</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr style="margin-left: 20px;"/>
+                        <h2 style="margin-left: 20px;">地震報告</h2>
+                        <div id="reports">
+                            <div class="eew_tile">
+                                <div class="report_content">
+                                    <div class="report_maxShindo">
+                                        <!--<h3 align="center" style="margin: 0;">最大震度</h3>-->
+                                        <img src="img/shindo/7.png" style="width:100%;">
+                                    </div>
+                                    <div class="report_details">
+                                        <h2 style="margin-bottom: 0;">臺灣東部海域</h2>
+                                        <p>2025-11-21 20:11:50</p>
+                                    </div>
+                                    <div class="report_scale">
+                                        <h1 style="text-align: center;justify-content: center;">M7.1</h1>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="eew_tile">
+                                <div class="report_content">
+                                    <div class="report_maxShindo">
+                                        <!--<h3 align="center" style="margin: 0;">最大震度</h3>-->
+                                        <img src="img/shindo/7.png" style="width:100%;">
+                                    </div>
+                                    <div class="report_details">
+                                        <h2 style="margin-bottom: 0;">臺灣東部海域</h2>
+                                        <p>2025-11-21 20:11:50</p>
+                                    </div>
+                                    <div class="report_scale">
+                                        <h1 style="text-align: center;justify-content: center;">M7.1</h1>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="eew_tile">
+                                <div class="report_content">
+                                    <div class="report_maxShindo">
+                                        <!--<h3 align="center" style="margin: 0;">最大震度</h3>-->
+                                        <img src="img/shindo/7.png" style="width:100%;">
+                                    </div>
+                                    <div class="report_details">
+                                        <h2 style="margin-bottom: 0;">臺灣東部海域</h2>
+                                        <p>2025-11-21 20:11:50</p>
+                                    </div>
+                                    <div class="report_scale">
+                                        <h1 style="text-align: center;justify-content: center;">M7.1</h1>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="eew_tile">
+                                <div class="report_content">
+                                    <div class="report_maxShindo">
+                                        <!--<h3 align="center" style="margin: 0;">最大震度</h3>-->
+                                        <img src="img/shindo/7.png" style="width:100%;">
+                                    </div>
+                                    <div class="report_details">
+                                        <h2 style="margin-bottom: 0;">臺灣東部海域</h2>
+                                        <p>2025-11-21 20:11:50</p>
+                                    </div>
+                                    <div class="report_scale">
+                                        <h1 style="text-align: center;justify-content: center;">M7.1</h1>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+        </div>
+        <div id="page2" class="app">
+
+        </div>
+        <div id="settingPage" class="app settingPage">
+            <h2>登入RFEQ帳號</h2>
+            <div id="login">
+                <label for="email">
+                    <p>電子郵件地址:</p>
+                </label>
+                <input id="email" name="email" type="text">
+                <label for="email">
+                    <p>密碼:</p>
+                </label>
+                <input id="password" name="password" type="password">
+            </div>
+            <div>
+
+            </div>
+            <hr/>
+        </div>
+        <div class="navbar">
+            <div class="navitem" data-target="page1"><h6 style="text-align: center;">地震</h6></div>
+            <div class="navitem" data-target="page2"><h6 style="text-align: center;">天氣</h6></div>
+            <div class="navitem" data-target="settingPage"><h6 style="text-align: center;">設定</h6></div>
+        </div>
+
+        <script src="js/ui.js"></script>
+        <script type="module" src="js/websocket.js"></script>
+        <script type="module" src="js/index.js"></script>
+        
+    </body>
+</html>
