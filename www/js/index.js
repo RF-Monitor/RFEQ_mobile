@@ -115,7 +115,7 @@ function mapInit(map){
 function onDeviceReady(){
     let alert = {
             "type": "eew-cwa",
-            "time": 1764426044000,
+            "time": 1764496725000,
             "center": {
                 "lon": 121.021,
                 "lat": 24.818,

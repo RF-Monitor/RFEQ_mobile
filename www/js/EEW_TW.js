@@ -145,7 +145,7 @@ class EEWTWMapRenderer {
     }
 
     initAlert(alert) {
-        const icon = this.L.icon({iconUrl : 'shindo_icon/epicenter_tw.png',iconSize : [30,30],});
+        const icon = this.L.icon({iconUrl : 'img/shindo_icon/epicenter_tw.png',iconSize : [30,30],});
         alert.center.icon = this.L.marker([alert.center.lat,alert.center.lon],{icon : icon,opacity : 1.0}).addTo(this.map);
         alert.center.Pwave = this.L.circle([alert.center.lat,alert.center.lon],{color : 'blue' , radius:0 , fill : false,pane:"wave_layer"}).addTo(this.map);
         alert.center.Swave = this.L.circle([alert.center.lat,alert.center.lon],{color : 'red' , radius:0,pane:"wave_layer"}).addTo(this.map);
