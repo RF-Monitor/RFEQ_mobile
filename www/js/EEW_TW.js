@@ -54,7 +54,7 @@ class EEWTW {
         alert = this.renderer.renderShindo(alert);
 
         //UI顯示
-        //this.ui.update(alert);
+        this.ui.init(alert);
     }
 
     handleUpdate(userlat, userlon, alert) {
@@ -70,7 +70,7 @@ class EEWTW {
         this.renderer.renderShindo(alert);
 
         //UI顯示
-        //this.ui.update(prev);
+        this.ui.update(prev);
     }
 
     updateCircleRadius() {
@@ -274,14 +274,69 @@ class EEWTWMapRenderer {
 }
 
 class EEWTWUI {
+    constructor() {
+        this.dom = null; // 存放對應這筆 eew 的 DOM 節點
+    }
+    init(alert) {
+        const container = document.getElementById("eew");
+
+        const div = document.createElement("div");
+        div.className = "eew_tile";
+        div.id = `eew-${alert.id}`;
+
+        div.innerHTML += `
+            <div class="eew_title">
+                <h3 style="margin-bottom: 0;">緊急地震速報(台灣CWA)</h3>
+            </div>
+        `;
+
+        div.innerHTML += `
+            <div class="eew_content">
+                <div class="eew_maxShindo">
+                    <h3 align="center" style="margin: 0;">最大震度</h3>
+                    <img src="img/shindo/${alert.max_shindo}.png" style="width:100%;">
+                </div>
+                <div class="eew_details">
+                    <h1 style="margin-bottom: 0;">${alert.center.cname} 地震</h1>
+                    <p>${formatTimestamp(alert.time)}</p>
+                    <div style="display: flex;flex-wrap: nowrap;">
+                        <div style="width: 50%;">
+                            <h1 align="left" style="margin-top: 10px;">M${(alert.scale).toFixed(1)}</h1>
+                        </div>
+                        <div style="width: 50%;">
+                            <h1 align="right" style="margin-top: 10px;">${alert.center.depth}KM</h1>
+                        </div>
+                    </div>
+                </div>                    
+            </div>
+        `
+
+        container.appendChild(div);
+        this.dom = div;
+    }
     update(alert) {
-        document.getElementById("RFPLUS3").style.display = "block";
-        document.getElementById("RFPLUS3_status_box").style.backgroundColor = "orange";
-        document.getElementById("RFPLUS3_maxshindo").src = `shindo_icon/selected/${alert.max_shindo}.png`;
-        document.getElementById("RFPLUS3_epicenter").innerHTML = alert.center.cname;
-        document.getElementById("RFPLUS3_time").innerHTML = formatTimestamp(alert.time);
-        document.getElementById("RFPLUS3_report_num").innerHTML = alert.report_num;
-        document.getElementById("RFPLUS3_scale").innerHTML = (alert.scale).toFixed(1);
+        if (!this.dom) this.init(alert);
+
+        div.innerHTML += `
+            <div class="eew_content">
+                <div class="eew_maxShindo">
+                    <h3 align="center" style="margin: 0;">最大震度</h3>
+                    <img src="img/shindo/${alert.max_shindo}.png" style="width:100%;">
+                </div>
+                <div class="eew_details">
+                    <h1 style="margin-bottom: 0;">${alert.center.cname} 地震</h1>
+                    <p>${formatTimestamp(alert.time)}</p>
+                    <div style="display: flex;flex-wrap: nowrap;">
+                        <div style="width: 50%;">
+                            <h1 align="left" style="margin-top: 10px;">M${(alert.scale).toFixed(1)}</h1>
+                        </div>
+                        <div style="width: 50%;">
+                            <h1 align="right" style="margin-top: 10px;">${alert.center.depth}KM</h1>
+                        </div>
+                    </div>
+                </div>                    
+            </div>
+        `
     }
 }
 
