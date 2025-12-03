@@ -5,14 +5,14 @@ class reportManager{
     }
 
     init(){
-        fetch("https://rfeqserver.myqnapcloud.com/reports?len=20")
-        .then(res => res.json)
+        fetch("https://rfeqserver.myqnapcloud.com/report?len=20")
+        .then(res => res.json())
         .then(msgs => {
             this.list = [];
             for(const msg of msgs){
                 this.list.push(new report(msg))
             }
-            this.UI.update();
+            this.UI.update(this.list);
         })
         .catch(err => {
             console.log(err);
@@ -66,7 +66,7 @@ class reportUI{
                         <p>${report.datetime}</p>
                     </div>
                     <div class="report_scale">
-                        <h1 style="text-align: center;justify-content: center;">M${report.magnitude}</h1>
+                        <h1 style="text-align: center;justify-content: center;">${report.magnitude}</h1>
                     </div>
                                     
                 </div>
