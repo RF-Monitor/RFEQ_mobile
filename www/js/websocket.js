@@ -1,4 +1,5 @@
 import { StationManager } from "./pga.js";
+import { reportManager } from "./reports.js";
 
 export function ws_connect(map){
 	let Station = new StationManager(map);
@@ -26,7 +27,9 @@ export function ws_connect(map){
 				//地震報告
 				if(data["type"] == "report"){
 					console.log(data["content"]);
-					let report = JSON.stringify(data["content"]);
+					let report = data["content"];
+					//reportManager.init(report);
+
 				}
 				//天氣警特報
 				if(data["type"] == "weather"){

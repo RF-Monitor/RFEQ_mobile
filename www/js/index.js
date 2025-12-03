@@ -1,6 +1,7 @@
 import { EEWTWManager } from "./EEW_TW.js";
 import { ws_connect } from "./websocket.js";
 import { locations } from "./locations.js";
+import { reportManager } from "./reports.js";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
@@ -131,9 +132,15 @@ function onDeviceReady(){
         }
     map = mapInit();
 	ws_connect(map);
+	
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
+	setInterval(() => EEW.tick(),100);
+
+	let report = new reportManager();
+	report.init();
+
     EEW.handleAlert(24.8,121.0,alert);
-    setInterval(() => EEW.tick(),100);
+    
 
 }
 
