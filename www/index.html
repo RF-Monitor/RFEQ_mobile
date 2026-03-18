@@ -39,11 +39,26 @@
             width: 100%;
             height: 50px;
             background: white;
+            color:black;
             border-radius: 20px 20px 0 0;
             box-shadow: 0 -6px 20px rgba(0,0,0,0.25);
             transform: translateY(calc(100% - 50px)); /* 一開始完全收回 */
             transition: transform 0.3s ease;
             z-index: 10;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #575757;
+                color: #ffffff;
+            }
+            .nav_main {
+                background-color: #575757;
+                color: #ffffff;
+            }
+            .navbar {
+                background-color: #3d3d3d;
+                color :#ffffff
+            }
         }
 
         .nav_main.open {
@@ -147,7 +162,7 @@
             width:20%;
         }
     </style>
-    <body style="font-family: 微軟正黑體;">
+    <body style="font-family: 微軟正黑體;color: black;">
         <div id="page1" class="app">
                 <div id='mapid' class="map"></div>
                 <div class="nav_main">
@@ -294,9 +309,9 @@
             <div class="navitem" data-target="page2"><h4 style="text-align: center;">天氣</h4></div>
             <div class="navitem" data-target="settingPage"><h4 style="text-align: center;">設定</h4></div>
         </div>
-
+        <script src="cordova.js"></script>
         <script src="js/ui.js"></script>
-        <script type="module" src="js/websocket.js"></script>
+        <!--<script type="module" src="js/websocket.js"></script>-->
         <script type="module" src="js/index.js"></script>
         
     </body>
