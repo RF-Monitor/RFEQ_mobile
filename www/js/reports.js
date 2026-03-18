@@ -5,7 +5,7 @@ class reportManager{
     }
 
     init(){
-        fetch("https://rfeqserver.myqnapcloud.com/report?len=20")
+        fetch("https://rptes.com/report?len=20")
         .then(res => res.json())
         .then(msgs => {
             this.list = [];
@@ -66,7 +66,7 @@ class reportUI{
                         <p>${report.datetime}</p>
                     </div>
                     <div class="report_scale">
-                        <h1 style="text-align: center;justify-content: center;">${report.magnitude}</h1>
+                        <h2 style="text-align: center;justify-content: center;">${report.magnitude}</h2>
                     </div>
                                     
                 </div>
