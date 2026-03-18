@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.rfeqserver.rfmonitor" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="com.rptes.rfeq" version="1.0.0-alpha.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>RFmonitor_mobile</name>
     <description>Sample Apache Cordova App</description>
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
@@ -15,9 +15,9 @@
     <allow-navigation href="*"/>
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:usesCleartextTraffic="true" />
+            <application android:usesCleartextTraffic="true" android:networkSecurityConfig="@xml/network_security_config"/>
             <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34" />
+            <preference name="GradlePluginGoogleServicesEnabled" value="true" />
         </edit-config>
     </platform>
-    
 </widget>
