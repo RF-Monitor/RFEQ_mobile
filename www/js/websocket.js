@@ -1,9 +1,10 @@
-import { StationManager } from "./pga.js";
-import { reportManager } from "./reports.js";
 
-export function ws_connect(map){
-	let Station = new StationManager(map);
-	let socket = new WebSocket("ws://RFEQSERVER.myqnapcloud.com:8788");//ws://RFEQSERVER.myqnapcloud.com:8788
+//import { reportManager } from "./reports.js";
+//import { EEWTWManager } from "./EEW_TW.js";
+
+export function ws_connect(EEWManager,reportManager,stationManager){
+	
+	let socket = new WebSocket("wss://rptes.com:443/ws");//ws://RFEQSERVER.myqnapcloud.com:8788
 	socket.onopen = function() {
 		
 	}
@@ -13,14 +14,18 @@ export function ws_connect(map){
 				//臺灣速報
 				if(data["type"] == "eew_tw"){
 					console.log(data["content"])
+					EEWManager.handleAlert(24.8,121.0,data["content"]);
 				}
+				/*
 				//日本速報
 				if(data["type"] == "eew_jp"){
 					eew_jp_ws = data["content"];
 				}
+				
 				if(data["type"] == "RFPLUS2"){
 					console.log("RFPLUS2 recieved")
 				}
+				*/
 				if(data["type"] == "RFPLUS3"){
 					console.log("RFPLUS3 recieved")
 				}
@@ -28,7 +33,7 @@ export function ws_connect(map){
 				if(data["type"] == "report"){
 					console.log(data["content"]);
 					let report = data["content"];
-					//reportManager.init(report);
+					reportManager.addReport(report[0]);
 
 				}
 				//天氣警特報
@@ -40,7 +45,7 @@ export function ws_connect(map){
 				if(data["type"] == "pga"){
 					console.log(data["content"])
 					let content = data["content"]
-					Station.updateAll(content);
+					stationManager.updateAll(content);
 				}
 				//海嘯
 				if(data["type"] == "tsunami"){
