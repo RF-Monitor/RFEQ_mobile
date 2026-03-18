@@ -2,6 +2,8 @@ import { EEWTWManager } from "./EEW_TW.js";
 import { ws_connect } from "./websocket.js";
 import { locations } from "./locations.js";
 import { reportManager } from "./reports.js";
+import { StationManager } from "./pga.js";
+import firebase from "./firebase.js"
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
@@ -114,9 +116,10 @@ function mapInit(map){
 }
 
 function onDeviceReady(){
+	//測試用警報
     let alert = {
             "type": "eew-cwa",
-            "time": 1764496725000,
+            "time": Date.now(),
             "center": {
                 "lon": 121.021,
                 "lat": 24.818,
@@ -131,16 +134,22 @@ function onDeviceReady(){
             "alert":true
         }
     map = mapInit();
-	ws_connect(map);
-	
+
+	firebase();
+
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
-	setInterval(() => EEW.tick(),100);
+	setInterval(() => {
+		EEW.tick(Date.now())
+	},100);
 
 	let report = new reportManager();
 	report.init();
 
-    EEW.handleAlert(24.8,121.0,alert);
-    
+	let Station = new StationManager(map);
+
+	ws_connect(EEW,report,Station);
+
+    /*EEW.handleAlert(24.8,121.0,alert);*/
 
 }
 
