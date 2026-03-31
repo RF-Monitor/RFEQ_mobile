@@ -1,13 +1,11 @@
 .settingPage{
     display: none;
     margin: 20px;
-    background-color: white;
     color: black;
 }
 
 @media (prefers-color-scheme: dark) {
     .settingPage{
-        background-color: black;
-        color: #575757;
+        color: white;
     }
 }
