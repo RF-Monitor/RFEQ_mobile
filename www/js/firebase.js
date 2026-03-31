@@ -59,6 +59,30 @@ export default function init(){
 			console.error("Subscribe error:", error);
 		}
 	);
+    FirebasePlugin.subscribe("eew_jp",
+		function () {
+			console.log("Subscribed");
+		},
+		function (error) {
+			console.error("Subscribe error:", error);
+		}
+	);
+    FirebasePlugin.subscribe("report",
+		function () {
+			console.log("Subscribed");
+		},
+		function (error) {
+			console.error("Subscribe error:", error);
+		}
+	);
+    FirebasePlugin.subscribe("pga",
+		function () {
+			console.log("Subscribed");
+		},
+		function (error) {
+			console.error("Subscribe error:", error);
+		}
+	);
 
     //onMessage
     FirebasePlugin.onMessageReceived(function(message) {
