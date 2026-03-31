@@ -46,20 +46,6 @@
             transition: transform 0.3s ease;
             z-index: 10;
         }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #575757;
-                color: #ffffff;
-            }
-            .nav_main {
-                background-color: #575757;
-                color: #ffffff;
-            }
-            .navbar {
-                background-color: #3d3d3d;
-                color :#ffffff
-            }
-        }
 
         .nav_main.open {
             transform: translateY(0); /* 展開 */
@@ -96,6 +82,7 @@
             flex-wrap: nowrap;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             background-color: white;
+            color: black;
             z-index: 20;
         }
 
@@ -103,7 +90,7 @@
             border-bottom: solid;
             cursor: pointer; 
             margin-bottom: 3px;
-            border-bottom-color: white;
+            /*border-bottom-color: white;*/
             margin-right: 15px;
             width:33.3%
         }
@@ -160,6 +147,32 @@
         .report_scale{
             display: flex;
             width:20%;
+        }
+
+        /*----------設定頁----------*/
+        .checkbox_label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px; /* checkbox 與文字間距 */
+        }
+
+        label p {
+            margin: 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #444444;
+                color: #ffffff;
+            }
+            .nav_main {
+                background-color: #3d3d3d;
+                color: #ffffff;
+            }
+            .navbar {
+                background-color: #3d3d3d;
+                color :#ffffff
+            }
         }
     </style>
     <body style="font-family: 微軟正黑體;color: black;">
@@ -299,8 +312,21 @@
                 </label>
                 <input id="password" name="password" type="password">
             </div>
+            <hr/>
             <div>
-
+                <h2>通知設定</h2>
+                <label for="tw_eew" class="checkbox_label">
+                    <input id="tw_eew" name="tw_eew" type="checkbox"><p>台灣地震速報(CWA)</p>
+                </label>
+                
+                <label for="tw_eew" class="checkbox_label">
+                    <input id="RFPLUS" name="RFPLUS" type="checkbox"><p>台灣進階參與式地震速報(RFEQ RFPLUS)</p>
+                </label>
+                
+                <label for="jp_eew" class="checkbox_label">
+                    <input id="jp_eew" name="jp_eew" type="checkbox"><p>日本地震速報(NIED)</p>
+                </label>
+                
             </div>
             <hr/>
         </div>
