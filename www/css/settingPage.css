@@ -5,13 +5,10 @@
     padding: 16px;
     font-family: sans-serif;
     color: #222;
+    background: #f2f2f2;
 }
 
-@media (prefers-color-scheme: dark) {
-    .settingPage{
-        color: white;
-    }
-}
+
 
 /* 卡片區塊 */
 .settingPage > div {
@@ -51,9 +48,14 @@
     transition: background 0.2s;
 }
 
-/* hover效果 */
+/* hover效果（桌機） */
 .checkbox_label:hover {
     background: #f5f5f5;
+}
+
+/* 👉 點擊回饋（手機很重要） */
+.checkbox_label:active {
+    background: #eaeaea;
 }
 
 /* checkbox大小 */
@@ -74,4 +76,31 @@
     height: 1px;
     background: #eee;
     margin: 16px 0;
+}
+
+/* 🌙 深色模式 */
+@media (prefers-color-scheme: dark) {
+    .settingPage{
+        color: #eee;
+        background: #121212;
+    }
+
+    .settingPage > div {
+        background: #1e1e1e;
+        box-shadow: none;
+    }
+
+    #login input {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        color: #fff;
+    }
+
+    .checkbox_label:hover {
+        background: #2a2a2a;
+    }
+
+    .settingPage hr {
+        background: #333;
+    }
 }
