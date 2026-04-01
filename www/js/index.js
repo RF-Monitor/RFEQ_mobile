@@ -4,6 +4,7 @@ import { locations } from "./locations.js";
 import { reportManager } from "./reports.js";
 import { StationManager } from "./pga.js";
 import firebase from "./firebase.js"
+import setting from "./setting.js";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
@@ -115,6 +116,27 @@ function mapInit(map){
     return map;
 }
 
+function settingsInit(){
+	/*----------設定頁面----------*/
+	document.getElementById("tw_eew").checked = setting.get("tw_eew");
+	document.getElementById("tw_eew").checked = setting.get("RFPLUS");
+	document.getElementById("tw_eew").checked = setting.get("jp_eew");
+
+	document.getElementById("tw_eew").addEventListener("change",(e) => {
+    	setting.set("tw_eew", e.target.checked);
+	})
+
+	document.getElementById("RFPLUS").addEventListener("change",(e) => {
+    	setting.set("RFPLUS", e.target.checked);
+	})
+
+	document.getElementById("jp_eew").addEventListener("change",(e) => {
+    	setting.set("jp_eew", e.target.checked);
+	})
+
+
+}
+
 function onDeviceReady(){
 	//測試用警報
     let alert = {
@@ -133,10 +155,34 @@ function onDeviceReady(){
             "max": 5,
             "alert":true
         }
+	settingsInit();
+
+	/*----------firebase----------*/
+	firebase.init();
+	if(setting.get("tw_eew")){
+		firebase.subscribe("tw_eew")
+	}
+	if(setting.get("RFPLUS")){
+		firebase.subscribe("RFPLUS")
+	}
+	if(setting.get("jp_eew")){
+		firebase.subscribe("jp_eew")
+	}
+	setting.subscribe("tw_eew", (c) => {
+		if(c) firebase.subscribe("tw_eew");
+		else firebase.unsubscribe("tw_eew");
+	})
+	setting.subscribe("RFPLUS", (c) => {
+		if(c) firebase.subscribe("RFPLUS");
+		else firebase.unsubscribe("RFPLUS");
+	})
+	setting.subscribe("jp_eew", (c) => {
+		if(c) firebase.subscribe("jp_eew");
+		else firebase.unsubscribe("jp_eew");
+	})
+
     map = mapInit();
-
-	firebase();
-
+	
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
 		EEW.tick(Date.now())
