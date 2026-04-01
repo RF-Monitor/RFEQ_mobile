@@ -171,6 +171,14 @@ function onDeviceReady(){
 	if(setting.get("jp_eew")){
 		firebase.subscribeTopic("jp_eew")
 	}
+	if(setting.get("report")){
+		firebase.subscribeTopic("report")
+	}
+	if(setting.get("pga")){
+		firebase.subscribeTopic("pga")
+	}
+
+	//監聽設定
 	setting.subscribe("tw_eew", (c) => {
 		if(c) firebase.subscribeTopic("tw_eew");
 		else firebase.unsubscribeTopic("tw_eew");
@@ -183,6 +191,14 @@ function onDeviceReady(){
 	setting.subscribe("jp_eew", (c) => {
 		if(c) firebase.subscribeTopic("jp_eew");
 		else firebase.unsubscribeTopic("jp_eew");
+	})
+	setting.subscribe("report", (c) => {
+		if(c) firebase.subscribeTopic("report");
+		else firebase.unsubscribeTopic("report");
+	})
+	setting.subscribe("pga", (c) => {
+		if(c) firebase.subscribeTopic("pga");
+		else firebase.unsubscribeTopic("pga");
 	})
 
     map = mapInit();
