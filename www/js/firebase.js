@@ -1,3 +1,5 @@
+import { subscribe } from "./setting";
+
 function requestNotificationPermission(permissions) {
     permissions.requestPermission(
         permissions.POST_NOTIFICATIONS,
@@ -19,7 +21,7 @@ function requestNotificationPermission(permissions) {
     );
 }
 
-export default function init(){
+export function init(){
     const permissions = cordova.plugins.permissions;
 
     // Android 13+ 通知權限
@@ -51,6 +53,7 @@ export default function init(){
     });
 
     //subscribe topic
+    /*
     FirebasePlugin.subscribe("eew_tw",
 		function () {
 			console.log("Subscribed");
@@ -83,6 +86,7 @@ export default function init(){
 			console.error("Subscribe error:", error);
 		}
 	);
+    */
 
     //onMessage
     FirebasePlugin.onMessageReceived(function(message) {
@@ -97,3 +101,33 @@ export default function init(){
         }
     });
 }
+
+export function subscribe(topic){
+    FirebasePlugin.subscribe(topic,
+		function () {
+			console.log("Subscribed");
+		},
+		function (error) {
+			console.error("Subscribe error:", error);
+		}
+	);
+}
+
+export function unsubscribe(topic){
+    FirebasePlugin.unsubscribe(topic,
+		function () {
+			console.log("Unubscribed");
+		},
+		function (error) {
+			console.error("Unubscribe error:", error);
+		}
+	);
+}
+
+const Firebase = {
+    init,
+    subscribe,
+    unsubscribe
+};
+
+export default Firebase;
