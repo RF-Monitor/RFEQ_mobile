@@ -6,7 +6,7 @@ const defaultSettings = {
 
 let subscribers = {}; // { key: [callback] }
 
-export function subscribe(key, callback) {
+function subscribe(key, callback) {
     if (!subscribers[key]) {
         subscribers[key] = [];
     }
@@ -23,12 +23,12 @@ function loadAll() {
     return saved ? JSON.parse(saved) : { ...defaultSettings };
 }
 
-export function getSetting(key) {
+function getSetting(key) {
     const obj = loadAll();
     return obj[key] ?? defaultSettings[key];
 }
 
-export function setSetting(key, value) {
+function setSetting(key, value) {
     const obj = loadAll();
 
     if (obj[key] === value) return;
