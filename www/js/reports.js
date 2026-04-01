@@ -26,7 +26,7 @@ class reportManager{
         if(this.list.length >= 30){
             this.removeEarliestReport();
         }
-        this.UI.update(list);
+        this.UI.update(this.list);
     }
 
     removeEarliestReport(){
