@@ -1,5 +1,5 @@
 import { EEWTWManager } from "./EEW_TW.js";
-import { ws_connect } from "./websocket.js";
+import websocketManager from "./websocket.js";
 import { locations } from "./locations.js";
 import { reportManager } from "./reports.js";
 import { StationManager } from "./pga.js";
@@ -119,8 +119,8 @@ function mapInit(map){
 function settingsInit(){
 	/*----------設定頁面----------*/
 	document.getElementById("tw_eew").checked = setting.get("tw_eew");
-	document.getElementById("tw_eew").checked = setting.get("RFPLUS");
-	document.getElementById("tw_eew").checked = setting.get("jp_eew");
+	document.getElementById("RFPLUS").checked = setting.get("RFPLUS");
+	document.getElementById("jp_eew").checked = setting.get("jp_eew");
 
 	document.getElementById("tw_eew").addEventListener("change",(e) => {
     	setting.set("tw_eew", e.target.checked);
@@ -158,27 +158,31 @@ function onDeviceReady(){
 	settingsInit();
 
 	/*----------firebase----------*/
+	
 	firebase.init();
+	
 	if(setting.get("tw_eew")){
-		firebase.subscribe("tw_eew")
+		firebase.subscribeTopic("tw_eew")
 	}
+	/*
 	if(setting.get("RFPLUS")){
 		firebase.subscribe("RFPLUS")
-	}
+	}*/
 	if(setting.get("jp_eew")){
-		firebase.subscribe("jp_eew")
+		firebase.subscribeTopic("jp_eew")
 	}
 	setting.subscribe("tw_eew", (c) => {
-		if(c) firebase.subscribe("tw_eew");
-		else firebase.unsubscribe("tw_eew");
+		if(c) firebase.subscribeTopic("tw_eew");
+		else firebase.unsubscribeTopic("tw_eew");
 	})
+	/*
 	setting.subscribe("RFPLUS", (c) => {
 		if(c) firebase.subscribe("RFPLUS");
 		else firebase.unsubscribe("RFPLUS");
-	})
+	})*/
 	setting.subscribe("jp_eew", (c) => {
-		if(c) firebase.subscribe("jp_eew");
-		else firebase.unsubscribe("jp_eew");
+		if(c) firebase.subscribeTopic("jp_eew");
+		else firebase.unsubscribeTopic("jp_eew");
 	})
 
     map = mapInit();
@@ -193,7 +197,8 @@ function onDeviceReady(){
 
 	let Station = new StationManager(map);
 
-	ws_connect(EEW,report,Station);
+	websocketManager.ws_init(EEW,report,Station);
+	websocketManager.ws_connect();
 
     /*EEW.handleAlert(24.8,121.0,alert);*/
 
