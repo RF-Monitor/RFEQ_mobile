@@ -1,8 +1,17 @@
 
 //import { reportManager } from "./reports.js";
 //import { EEWTWManager } from "./EEW_TW.js";
+let EEWManager = null
+let reportManager = null;
+let stationManager = null;
 
-export function ws_connect(EEWManager,reportManager,stationManager){
+function ws_init(EEW,report,station){
+	EEWManager = EEW;
+	reportManager = report;
+	stationManager = station;
+}
+
+export function ws_connect(){
 	
 	let socket = new WebSocket("wss://rptes.com:443/ws");//ws://RFEQSERVER.myqnapcloud.com:8788
 	socket.onopen = function() {
@@ -69,3 +78,10 @@ export function ws_connect(EEWManager,reportManager,stationManager){
 		ws_connect();
 	}
 }
+
+const WebsocketManager = {
+    ws_init,
+    ws_connect,
+};
+
+export default WebsocketManager;
