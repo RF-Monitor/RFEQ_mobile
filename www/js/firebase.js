@@ -1,4 +1,3 @@
-import { subscribe } from "./setting";
 
 function requestNotificationPermission(permissions) {
     permissions.requestPermission(
@@ -30,7 +29,7 @@ export function init(){
             permissions.POST_NOTIFICATIONS,
             function (status) {
                 if (status.hasPermission) {
-                    setupFCM();
+                    //setupFCM();
                 } else {
                     requestNotificationPermission(permissions);
                 }
@@ -102,7 +101,7 @@ export function init(){
     });
 }
 
-export function subscribe(topic){
+function subscribeTopic(topic){
     FirebasePlugin.subscribe(topic,
 		function () {
 			console.log("Subscribed");
@@ -113,7 +112,7 @@ export function subscribe(topic){
 	);
 }
 
-export function unsubscribe(topic){
+function unsubscribeTopic(topic){
     FirebasePlugin.unsubscribe(topic,
 		function () {
 			console.log("Unubscribed");
@@ -126,8 +125,8 @@ export function unsubscribe(topic){
 
 const Firebase = {
     init,
-    subscribe,
-    unsubscribe
+    subscribeTopic,
+    unsubscribeTopic
 };
 
 export default Firebase;
