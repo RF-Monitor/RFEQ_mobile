@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="css/leaflet.css" />
         <script src="js/leaflet/leaflet.js"></script>
         <script src="js/jquery/jquery.js"></script>
-        <title>RF-monitor</title>
+        <title>RFEQ</title>
     </head>
     <style>
         body{
@@ -23,7 +23,6 @@
         .map{
             height: 100%;
             overflow: hidden;
-            z-index: 15;
             height: 100vh;
             width: 100%;
             position:absolute;
@@ -162,22 +161,26 @@
 
         @media (prefers-color-scheme: dark) {
             body {
-                background-color: #1e1e1e;
+                background-color: #121212;
                 color: #ffffff;
             }
             .nav_main {
-                background-color: #3d3d3d;
+                background-color: #1e1e1e;
                 color: #ffffff;
             }
             .navbar {
-                background-color: #3d3d3d;
+                background-color: #1e1e1e;
                 color :#ffffff
             }
         }
     </style>
     <body style="font-family: 微軟正黑體;color: black;">
         <div id="page1" class="app">
+                <!--主地圖-->
                 <div id='mapid' class="map"></div>
+                <!--地震報告地圖-->
+                <div id="map_report" class="map" style="z-index: 2; display: none;"></div>
+                
                 <div class="nav_main">
                     <div class="drag_handle"></div>
                     <div class="eew_list">
