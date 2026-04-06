@@ -8,13 +8,78 @@ import setting from "./setting.js";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
+let map2 = null;
 let country_geojson = {}
-var countylines = {}
+//var countylines = {}
 var town_line = {};
 var town_ID_list = []
+var countyLine = {};
 
-function mapInit(map){
-    map = L.map('mapid').setView([23.7, 120.924610], 8);
+async function loadCountyLines() {
+    try {
+        const res = await fetch("geojson/taiwan_ADB.geojson");
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
+async function loadCityLines() {
+    try {
+        const res = await fetch("geojson/TOWN_MOI.geojson");
+        const data = await res.json();
+
+        const town_line = {};
+
+        for (let i = 0; i < data.features.length; i++) {
+            const feature = data.features[i];
+            const code = feature.properties.TOWNCODE;
+            town_line[code] = feature;
+        }
+
+        return town_line;
+
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+async function loadCountyGeoJson() {
+    const country_list = [
+        "基隆市","臺北市","新北市","桃園市","新竹縣","新竹市",
+        "苗栗縣","臺中市","彰化縣","雲林縣","嘉義縣","嘉義市",
+        "臺南市","高雄市","屏東縣","臺東縣","花蓮縣","宜蘭縣",
+        "澎湖縣","金門縣","連江縣","南投縣"
+    ];
+
+    const geojson_list = {};
+
+    try {
+        await Promise.all(
+            country_list.map(async (name) => {
+                const res = await fetch(`geojson/countries/${name}.json`);
+                const data = await res.json();
+                geojson_list[name] = data;
+            })
+        );
+
+        return geojson_list;
+
+    } catch (err) {
+        console.error("載入縣市 geojson 失敗:", err);
+        return null;
+    }
+}
+async function loadTownId() {
+    try {
+        const res = await fetch("json/Town_ID.json");
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function mapInit(mapid){
+    const map = L.map(mapid).setView([23.7, 120.924610], 8);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { 
         minZoom: 3, 
@@ -22,44 +87,9 @@ function mapInit(map){
     ).addTo(map);
 
     //----------geoJson----------//
-    
-    $.ajaxSettings.async = false;
     //縣市界
-    countylines = {}
-    $.getJSON("geojson/taiwan_ADB.geojson", function (r) {
-		countylines = r
-	});
+    const countylines = await loadCountyLines();
     console.log(countylines)
-    //鄉鎮市區界
-	
-	$.getJSON("geojson/TOWN_MOI.geojson", function (r) {
-		country_geojson = r;
-		for (let i = 0; i < r["features"].length; i++) {
-			town_line[r["features"][i]["properties"]["TOWNCODE"]] = r["features"][i]
-		}
-	});
-
-    //縣市列表
-    let country_list = ["基隆市", "臺北市", "新北市", "桃園市", "新竹縣", "新竹市", "苗栗縣", "臺中市", "彰化縣", "雲林縣", "嘉義縣", "嘉義市", "臺南市", "高雄市", "屏東縣", "臺東縣", "花蓮縣", "宜蘭縣", "澎湖縣", "金門縣", "連江縣", "南投縣"];
-
-    //縣市界(獨立)
-	let country_count = 0
-	var geojson_list = {};
-
-
-	for (let i = 0; i < country_list.length; i++) {
-		country_count = i
-		$.getJSON("geojson/countries/" + country_list[i] + ".json", function (r) {
-			geojson_list[country_list[country_count]] = r;
-		});
-	};
-
-    //town_ID
-    
-	$.getJSON("json/Town_ID.json", function (r) {
-		town_ID_list = r;
-	})
-
 
     //----------panes----------//
 	map.createPane("RFPLUS_shindo_list_layer");
@@ -133,11 +163,17 @@ function settingsInit(){
 	document.getElementById("jp_eew").addEventListener("change",(e) => {
     	setting.set("jp_eew", e.target.checked);
 	})
+	document.getElementById("report").addEventListener("change",(e) => {
+    	setting.set("jp_eew", e.target.checked);
+	})
+	document.getElementById("pga").addEventListener("change",(e) => {
+    	setting.set("jp_eew", e.target.checked);
+	})
 
 
 }
 
-function onDeviceReady(){
+async function onDeviceReady(){
 	//測試用警報
     let alert = {
             "type": "eew-cwa",
@@ -200,8 +236,17 @@ function onDeviceReady(){
 		if(c) firebase.subscribeTopic("pga");
 		else firebase.unsubscribeTopic("pga");
 	})
+	
+	/*----------地圖相關----------*/
+	//地理資料
+	town_ID_list = await loadTownId();
+	town_line = await loadCityLines();
+	countyLine = await loadCountyGeoJson();
 
-    map = mapInit();
+	//map
+    map = await mapInit("mapid");
+	map2 = await mapInit("map_report")
+
 	
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
