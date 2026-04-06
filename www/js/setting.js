@@ -1,7 +1,9 @@
 const defaultSettings = {
     tw_eew: true,
     RFPLUS: true,
-    jp_eew: false
+    jp_eew: false,
+    report: true,
+    pga: true
 };
 
 let subscribers = {}; // { key: [callback] }
