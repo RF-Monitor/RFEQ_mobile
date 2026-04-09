@@ -64,3 +64,17 @@ handle.addEventListener('touchend', () => {
 
     sheet.style.transform = ''; // 回歸 class 控制
 });
+
+export function login(){
+    document.getElementById("login").style.display = "none";
+    document.getElementById("user").style.display = "block";
+}
+export function logout(){
+    document.getElementById("login").style.display = "block";
+    document.getElementById("user").style.display = "none";
+}
+
+export default {
+    login,
+    logout
+}

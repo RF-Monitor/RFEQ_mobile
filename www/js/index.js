@@ -5,6 +5,10 @@ import { reportManager } from "./reports.js";
 import { StationManager } from "./pga.js";
 import firebase from "./firebase.js"
 import setting from "./setting.js";
+import auth from "./auth.js";
+import ui from "./ui.js";
+
+const server_url = "https://rptes.com";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
@@ -171,8 +175,21 @@ function settingsInit(){
 	document.getElementById("pga").addEventListener("change",(e) => {
     	setting.set("pga", e.target.checked);
 	})
-
-
+	document.getElementById("login_btn").addEventListener("click",async () => {
+		document.getElementById("login_btn").innerText = "登入中...";
+		document.getElementById("login_btn").disabled = true;
+		const email = document.getElementById("email").value;
+		const password = document.getElementById("password").value;
+		const result = auth.login(email, password, server_url);
+		if(result.success){
+			setting.set("loginUser", email);
+			setting.set("loginKey", result.loginKey);
+			ui.login();
+		}else{
+			alert("登入失敗!請檢查帳號密碼是否正確");
+			ui.logout();
+		}
+	})
 }
 
 async function onDeviceReady(){
