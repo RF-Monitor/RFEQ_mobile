@@ -185,10 +185,17 @@ function settingsInit(){
 			setting.set("loginUser", email);
 			setting.set("loginKey", result.loginKey);
 			ui.login();
+			await websocketManager.login(result.loginKey);
 		}else{
 			alert("登入失敗!請檢查帳號密碼是否正確");
 			ui.logout();
 		}
+	})
+	document.getElementById("logout_btn").addEventListener("click",async () => {
+		setting.set("loginUser", "");
+		setting.set("loginKey", "");
+		ui.logout();
+		alert("登出成功");
 	})
 }
 
@@ -266,7 +273,7 @@ async function onDeviceReady(){
     map = await mapInit("mapid");
 	map2 = await mapInit("map_report")
 
-	
+	/*----------主要功能處理----------*/
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
 		EEW.tick(Date.now())
@@ -277,9 +284,17 @@ async function onDeviceReady(){
 
 	let Station = new StationManager(map);
 
+	/*----------websocket連線----------*/
 	websocketManager.ws_init(EEW,report,Station);
 	websocketManager.ws_connect();
-
+	if(setting.get("loginKey")){
+		const result = await websocketManager.login(setting.get("loginKey"));
+		if(result.status == "success"){
+			ui.login();
+		}else{
+			ui.logout();
+		}
+	}
     /*EEW.handleAlert(24.8,121.0,alert);*/
 
 }
