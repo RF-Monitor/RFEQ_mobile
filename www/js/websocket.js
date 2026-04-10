@@ -4,6 +4,8 @@
 let EEWManager = null
 let reportManager = null;
 let stationManager = null;
+let socket = null
+let loginResolver = null;
 
 function ws_init(EEW,report,station){
 	EEWManager = EEW;
@@ -13,7 +15,7 @@ function ws_init(EEW,report,station){
 
 export function ws_connect(){
 	
-	let socket = new WebSocket("wss://rptes.com:443/ws");//ws://RFEQSERVER.myqnapcloud.com:8788
+	socket = new WebSocket("wss://rptes.com:443/ws");//ws://RFEQSERVER.myqnapcloud.com:8788
 	socket.onopen = function() {
 		
 	}
@@ -61,27 +63,29 @@ export function ws_connect(){
 					console.log(data["content"])
 					let content = data["content"]
 				}
-				//要求公鑰 並嘗試登入
-				if(data["type"] == "key"){
-					
-				}
 				if(data["type"] == "login"){
-					let login_status = data["status"];
-					if(login_status == "success"){
-						
-					}else{
-						
-					}
+					loginResolver(data);
 				}
 	};
 	socket.onclose = () => {
 		ws_connect();
 	}
 }
+export function login(verifyKey){
+	return new Promise((resolve, reject) => {
+		loginResolver = resolve;
+
+		socket.send(JSON.stringify({
+			request: 'verify_noPublicKey',
+			key: verifyKey
+		}));
+	});
+}
 
 const WebsocketManager = {
     ws_init,
     ws_connect,
+	login
 };
 
 export default WebsocketManager;
