@@ -190,6 +190,8 @@ function settingsInit(){
 			alert("登入失敗!請檢查帳號密碼是否正確");
 			ui.logout();
 		}
+		document.getElementById("login_btn").disabled = false;
+		document.getElementById("login_btn").innerText = "登入";
 	})
 	document.getElementById("logout_btn").addEventListener("click",async () => {
 		setting.set("loginUser", "");
