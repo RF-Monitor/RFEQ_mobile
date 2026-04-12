@@ -155,8 +155,8 @@ function settingsInit(){
 	document.getElementById("tw_eew").checked = setting.get("tw_eew");
 	document.getElementById("RFPLUS").checked = setting.get("RFPLUS");
 	document.getElementById("jp_eew").checked = setting.get("jp_eew");
-	document.getElementById("report").checked = setting.get("jp_eew");
-	document.getElementById("pga").checked = setting.get("jp_eew");
+	document.getElementById("report").checked = setting.get("report");
+	document.getElementById("pga").checked = setting.get("pga");
 
 	document.getElementById("tw_eew").addEventListener("change",(e) => {
     	setting.set("tw_eew", e.target.checked);
