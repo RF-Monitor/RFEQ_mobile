@@ -180,7 +180,7 @@ function settingsInit(){
 		document.getElementById("login_btn").disabled = true;
 		const email = document.getElementById("email").value;
 		const password = document.getElementById("password").value;
-		const result = auth.login(email, password, server_url);
+		const result = await auth.login(email, password, server_url);
 		if(result.success){
 			setting.set("loginUser", email);
 			setting.set("loginKey", result.loginKey);
