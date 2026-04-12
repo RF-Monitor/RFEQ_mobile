@@ -17,7 +17,7 @@ export async function login(email, password, server_url) {
     const data = await response.json();
 
     // 登入失敗
-    if (data.status !== "success") {
+    if (data.status != "success") {
       return {
         success: false,
         reason: data.content
