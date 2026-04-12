@@ -3,7 +3,7 @@
  */
 export async function login(email, password, server_url) {
   try {
-    const response = await fetch(`${server_url}/api/login`, {
+    const response = await fetch(`${server_url}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
