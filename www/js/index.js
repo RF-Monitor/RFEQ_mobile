@@ -288,7 +288,7 @@ async function onDeviceReady(){
 
 	/*----------websocket連線----------*/
 	websocketManager.ws_init(EEW,report,Station);
-	websocketManager.ws_connect();
+	await websocketManager.ws_connect();
 	if(setting.get("loginKey")){
 		const result = await websocketManager.login(setting.get("loginKey"));
 		if(result.status == "success"){
