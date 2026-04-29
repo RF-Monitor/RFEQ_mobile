@@ -6,9 +6,10 @@ import { StationManager } from "./pga.js";
 import firebase from "./firebase.js"
 import setting from "./setting.js";
 import auth from "./auth.js";
+import myRFsensor from "./myRFsensor.js";
 import ui from "./ui.js";
 
-const server_url = "https://rptes.com";
+const server_url = "rptes.com";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 let map = null;
@@ -297,6 +298,20 @@ async function onDeviceReady(){
 			ui.logout();
 		}
 	}
+	
+	/*----------myRFsensor----------*/
+	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("page2"))
+	if(setting.get("loginKey")){
+		const RFsensorList = await myRFsensor.getMyRFsensor(server_url, setting.get("loginKey"));
+		RFsensorList.forEach(sensor => {
+			const id = sensor.id;
+			const status = await myRFsensor.getRFsensorStatus(server_url, id);
+			sensor.status = status;
+			myRFsensorList.add(sensor);
+		});
+		myRFsensorList.render();
+	}
+
     /*EEW.handleAlert(24.8,121.0,alert);*/
 
 }
