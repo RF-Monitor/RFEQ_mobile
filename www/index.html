@@ -148,6 +148,22 @@
             width:20%;
         }
 
+        /*----------RF-sensor頁----------*/
+        #page2{
+            padding: 10px;
+        }
+        .sensor{
+            width: calc(100%-20px);
+            height: fit-content;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: flex;
+        }
+        .sensor_text{
+            width: 70%;
+        }
+
         /*----------設定頁----------*/
         .checkbox_label {
             display: inline-flex;
@@ -169,6 +185,10 @@
                 color: #ffffff;
             }
             .navbar {
+                background-color: #1e1e1e;
+                color :#ffffff
+            }
+            .sensor{
                 background-color: #1e1e1e;
                 color :#ffffff
             }
@@ -301,7 +321,7 @@
                 </div>
         </div>
         <div id="page2" class="app">
-
+            
         </div>
         <div id="settingPage" class="app settingPage">
             <h2>登入RFEQ帳號</h2>
@@ -346,7 +366,7 @@
         </div>
         <div class="navbar">
             <div class="navitem" data-target="page1"><h4 style="text-align: center;">地震</h4></div>
-            <div class="navitem" data-target="page2"><h4 style="text-align: center;">天氣</h4></div>
+            <div class="navitem" data-target="page2"><h4 style="text-align: center;">我的測站</h4></div>
             <div class="navitem" data-target="settingPage"><h4 style="text-align: center;">設定</h4></div>
         </div>
         <script src="cordova.js"></script>
