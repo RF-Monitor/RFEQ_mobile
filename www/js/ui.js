@@ -74,7 +74,32 @@ export function logout(){
     document.getElementById("user").style.display = "none";
 }
 
+class MyRFsensorList{
+    constructor(container){
+        this.container = container;
+        this.list = [];
+    }
+    add(sensor){
+        this.list.push(sensor)
+    }
+    render(){
+        this.container.innerHTML = "";
+        this.list.forEach(sensor => {
+            this.container.innerHTML += `
+            <div class="sensor">
+                <img src="img/sensor.png" style="width: 30%;">
+                <div class="sensor_text">
+                    <h2>${sensor.name}</h2>
+                    <h5>ID: ${sensor.id}</h5>
+                </div>
+            </div>
+            `
+        })
+    }
+}
+
 export default {
     login,
-    logout
+    logout,
+    MyRFsensorList
 }
