@@ -303,12 +303,15 @@ async function onDeviceReady(){
 	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("page2"))
 	if(setting.get("loginKey")){
 		const RFsensorList = await myRFsensor.getMyRFsensor(server_url, setting.get("loginKey"));
-		RFsensorList.forEach(sensor => {
-			const id = sensor.id;
-			const status = await myRFsensor.getRFsensorStatus(server_url, id);
-			sensor.status = status;
-			myRFsensorList.add(sensor);
-		});
+		await Promise.all(
+			RFsensorList.map(async (sensor) => {
+				const id = sensor.id;
+				const data = await myRFsensor.getRFsensorData(server_url, id);
+				sensor.data = data;
+				myRFsensorList.add(sensor);
+			})
+		);
+
 		myRFsensorList.render();
 	}
 
