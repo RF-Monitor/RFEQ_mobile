@@ -24,7 +24,7 @@ async function getRFsensorData(server, id){
     }
 
     const data = await res.json();
-    return data[0];
+    return data.data[0];
 
 }
 
