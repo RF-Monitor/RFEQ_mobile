@@ -1,3 +1,5 @@
+import { timestampNow } from "./time.js";
+
 /*----------切頁----------*/
 const pages = ["page1", "page2", "settingPage"];
 
@@ -85,11 +87,18 @@ class MyRFsensorList{
     render(){
         this.container.innerHTML = "";
         this.list.forEach(sensor => {
+            let status = "";
+            if (timestampNow(0) - sensor.data.timestamp >= 5000) {
+                status = "🟥已離線"
+            }else{
+                status = "🟩在線上"
+            }
             this.container.innerHTML += `
             <div class="sensor">
                 <img src="img/sensor.png" style="width: 30%;">
                 <div class="sensor_text">
                     <h2>${sensor.name}</h2>
+                    <h5>${status}</h5>
                     <h5>ID: ${sensor.id}</h5>
                 </div>
             </div>
