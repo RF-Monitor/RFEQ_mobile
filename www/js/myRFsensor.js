@@ -17,7 +17,7 @@ async function getMyRFsensor(server, key){
     return data;
 }
 
-async function getRFsensorStatus(server, id){
+async function getRFsensorData(server, id){
     const res = await fetch(`https://${server}/api/RFEQ/pga?id=${id}`)
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -29,5 +29,6 @@ async function getRFsensorStatus(server, id){
 }
 
 export default {
-    getMyRFsensor
+    getMyRFsensor,
+    getRFsensorData
 }
