@@ -123,10 +123,32 @@ function unsubscribeTopic(topic){
 	);
 }
 
+async function reportTokenToServer(server, token, user, verifyKey, ){
+    const platform = "";
+    const app_version = "";
+    const device_model = "";
+    const payload = {
+            user,
+            token,
+            platform,
+            app_version,
+            device_model
+    };
+
+    await fetch(`https://${server}/api/firebase/registerDevice`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+}
+
 const Firebase = {
     init,
     subscribeTopic,
-    unsubscribeTopic
+    unsubscribeTopic,
+    reportTokenToServer
 };
 
 export default Firebase;
