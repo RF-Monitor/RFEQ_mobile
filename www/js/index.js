@@ -6,7 +6,7 @@ import { StationManager } from "./pga.js";
 import firebase from "./firebase.js"
 import setting from "./setting.js";
 import auth from "./auth.js";
-import myRFsensor from "./myRFsensor.js";
+import myRFsensorHandler from "./myRFsensor.js";
 import ui from "./ui.js";
 
 const server_url = "rptes.com";
@@ -300,19 +300,28 @@ async function onDeviceReady(){
 	}
 	
 	/*----------myRFsensor----------*/
-	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("page2"))
+	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("RFsensorList"))
+	const onSensorSelect = (sensor) => {
+		const myRFsensor = new ui.MyRFsensor(sensor);
+		myRFsensor.show({
+			submit:(data) => {
+
+			}
+		});
+		myRFsensor.render();
+	}
 	if(setting.get("loginKey")){
-		const RFsensorList = await myRFsensor.getMyRFsensor(server_url, setting.get("loginKey"));
+		const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
 		await Promise.all(
 			RFsensorList.map(async (sensor) => {
 				const id = sensor.id;
-				const data = await myRFsensor.getRFsensorData(server_url, id);
+				const data = await myRFsensorHandler.getRFsensorData(server_url, id);
 				sensor.data = data;
 				myRFsensorList.add(sensor);
 			})
 		);
 
-		myRFsensorList.render();
+		myRFsensorList.render(onSensorSelect);
 	}
 
     /*EEW.handleAlert(24.8,121.0,alert);*/
