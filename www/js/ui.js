@@ -76,6 +76,44 @@ export function logout(){
     document.getElementById("user").style.display = "none";
 }
 
+class MyRFsensor{
+    constructor(sensor){
+        this.sensor = sensor;
+        this.pageOverlay = document.getElementById("modalOverlay");
+        this.page = document.getElementById("RFsensorPage");
+        this.submitButton = document.getElementById("submit");
+        this.closeButton = document.getElementById("closeModal");
+
+        this.closeButton.addEventListener("click", () => {
+            this.hide()
+        });
+
+        this.title = document.getElementById("sensorID")
+        this.nameInput = document.getElementById("sensorNameInput");
+        this.latInput = document.getElementById("sensorLatInput");
+        this.lonInput = document.getElementById("sensorLonInput");
+    }
+    show({ submit } = {}){
+        this.pageOverlay.style.display = "flex";
+        this.submitButton.addEventListener("click", () => {
+            const id = this.sensor.data.id;
+            const name = this.nameInput.value;
+            const lat = this.latInput.value;
+            const lon = this.lonInput.value;
+            submit?.({id, name, lat, lon})
+        })
+    }
+    hide(){
+        this.pageOverlay.style.display = "none";
+    }
+    render(){
+        this.title.innerText = `${this.sensor.data.id}(${this.sensor.data.cname})`
+        this.nameInput.value = this.sensor.data.name;
+        this.latInput.value = this.sensor.data.lat;
+        this.lonInput.value = this.sensor.data.lon;
+    }
+}
+
 class MyRFsensorList{
     constructor(container){
         this.container = container;
@@ -84,31 +122,63 @@ class MyRFsensorList{
     add(sensor){
         this.list.push(sensor)
     }
-    render(){
+    render(onSelect = () => {}) {
         this.container.innerHTML = "";
+
         this.list.forEach(sensor => {
             let status = "";
-            if (timestampNow(0) - sensor.data.timestamp >= 5000) {
-                status = "🟥已離線"
-            }else{
-                status = "🟩在線上"
+            if (!sensor.data) {
+                status = "🟥尚未登記，請洽RFEQ工作人員處理";
+            } else if (timestampNow(0) - sensor.data.timestamp >= 5000) {
+                status = `🟥已離線(${sensor.data.cname})`;
+            } else {
+                status = `🟩在線上(${sensor.data.cname})`;
             }
-            this.container.innerHTML += `
-            <div class="sensor">
-                <img src="img/sensor.png" style="width: 30%;">
-                <div class="sensor_text">
-                    <h2>${sensor.name}</h2>
-                    <h5>${status}</h5>
-                    <h5>ID: ${sensor.id}</h5>
-                </div>
-            </div>
-            `
-        })
+
+            // 外層 div
+            const sensorDiv = document.createElement("div");
+            sensorDiv.id = `RFsensor_${sensor.id}`;
+            sensorDiv.className = "sensor";
+
+            // 圖片
+            const img = document.createElement("img");
+            img.src = "img/sensor.png";
+            img.style.width = "30%";
+
+            // 文字區塊
+            const textDiv = document.createElement("div");
+            textDiv.className = "sensor_text";
+
+            const h2 = document.createElement("h2");
+            h2.textContent = sensor.name;
+
+            const h5_status = document.createElement("h5");
+            h5_status.textContent = status;
+
+            const h5_id = document.createElement("h5");
+            h5_id.textContent = `ID: ${sensor.id}`;
+
+            // 組裝
+            textDiv.appendChild(h2);
+            textDiv.appendChild(h5_status);
+            textDiv.appendChild(h5_id);
+
+            sensorDiv.appendChild(img);
+            sensorDiv.appendChild(textDiv);
+
+            //點擊後事件
+            sensorDiv.addEventListener("click", () => {
+                onSelect(sensor);
+            })
+
+            this.container.appendChild(sensorDiv);
+        });
     }
 }
 
 export default {
     login,
     logout,
+    MyRFsensor,
     MyRFsensorList
 }
