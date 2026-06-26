@@ -16,7 +16,7 @@ function ws_init(EEW,report,station){
 export function ws_connect(){
 	return new Promise((resolve, reject) => {
 		
-		socket = new WebSocket("wss://rptes.com:443/ws");//ws://RFEQSERVER.myqnapcloud.com:8788
+		socket = new WebSocket("wss://rptes.com:443/ws/");//ws://RFEQSERVER.myqnapcloud.com:8788
 		
 		socket.onopen = function() {
 			resolve(socket); // 這裡才代表「真的連上」
