@@ -19,6 +19,22 @@ export function ws_connect(){
 		socket = new WebSocket("wss://rptes.com:443/ws/");//ws://RFEQSERVER.myqnapcloud.com:8788
 		
 		socket.onopen = function() {
+			//  test data
+			/*
+			EEWManager.handleAlert(24.8,121.0,{"id":"1749301625",
+                        "type":"RFPLUS3",
+                        "time": Date.now(),
+                        "center":{
+                            "lat":24.818,//float
+                            "lon":121.02,///float
+                            "cname":"新竹縣竹北市",//float
+                            "depth":10
+                        },
+                        "scale":5.123456789,
+                        "rate":0,
+                        "report_num":1,
+                        "final":false});
+			*/
 			resolve(socket); // 這裡才代表「真的連上」
 		}
 		
