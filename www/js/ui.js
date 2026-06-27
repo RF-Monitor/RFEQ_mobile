@@ -1,21 +1,31 @@
 import { timestampNow } from "./time.js";
 
 /*----------切頁----------*/
-const pages = ["page1", "page2", "settingPage"];
+export function initSwitchPage(map, map2){
+    const pages = ["page1", "page2", "settingPage"];
 
-document.querySelectorAll(".navitem").forEach(item => {
-    item.addEventListener("click", () => {
-        const show = item.dataset.target;
+    document.querySelectorAll(".navitem").forEach(item => {
+        item.addEventListener("click", () => {
+            const show = item.dataset.target;
 
-        pages.forEach(p => {
-            document.getElementById(p).style.display = (p === show) ? "block" : "none";
+            pages.forEach(p => {
+                document.getElementById(p).style.display = (p === show) ? "block" : "none";
+            });
+
+            if (show === "page1") {
+                setTimeout(() => {
+                    map.invalidateSize();
+                    map2.invalidateSize();
+                }, 100);
+            }
         });
     });
-});
 
-// 預設顯示 page1
-pages.forEach(p => document.getElementById(p).style.display = "none");
-document.getElementById("page1").style.display = "block";
+    // 預設顯示 page1
+    pages.forEach(p => document.getElementById(p).style.display = "none");
+    document.getElementById("page1").style.display = "block";
+}
+
 
 /*----------資訊抽屜開合----------*/
 const sheet = document.querySelector('.nav_main');
@@ -177,6 +187,7 @@ class MyRFsensorList{
 }
 
 export default {
+    initSwitchPage,
     login,
     logout,
     MyRFsensor,

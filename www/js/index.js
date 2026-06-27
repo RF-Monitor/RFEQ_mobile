@@ -276,6 +276,8 @@ async function onDeviceReady(){
     map = await mapInit("mapid");
 	map2 = await mapInit("map_report")
 
+	ui.initSwitchPage(map, map2)
+
 	/*----------主要功能處理----------*/
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
@@ -304,10 +306,10 @@ async function onDeviceReady(){
 	const onSensorSelect = (sensor) => {
 		const myRFsensor = new ui.MyRFsensor(sensor);
 		myRFsensor.show({
-			submit:(data) => {
+			submit:async (data) => {
 				// 套用測站設定
 				if(await myRFsensorHandler.setRFsensor(data, setting.get("loginUser"), setting.get("loginKey"))){
-					alert("設定成功")
+					window.alert("設定成功");
 				}
 			}
 		});
