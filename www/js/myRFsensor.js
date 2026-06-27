@@ -28,7 +28,27 @@ async function getRFsensorData(server, id){
 
 }
 
+async function setRFsensor(data, username, loginKey){
+    const res = await fetch(`https://rptes.com/api/member/setRFsensorConfig`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ...data,
+                username,
+                loginKey 
+            })
+    });
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return true
+
+}
 export default {
     getMyRFsensor,
-    getRFsensorData
+    getRFsensorData,
+    setRFsensor
 }
