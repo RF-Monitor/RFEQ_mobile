@@ -305,7 +305,10 @@ async function onDeviceReady(){
 		const myRFsensor = new ui.MyRFsensor(sensor);
 		myRFsensor.show({
 			submit:(data) => {
-
+				// 套用測站設定
+				if(await myRFsensorHandler.setRFsensor(data, setting.get("loginUser"), setting.get("loginKey"))){
+					alert("設定成功")
+				}
 			}
 		});
 		myRFsensor.render();
