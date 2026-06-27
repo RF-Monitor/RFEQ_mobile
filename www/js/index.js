@@ -229,10 +229,7 @@ async function onDeviceReady(){
 	if(setting.get("tw_eew")){
 		firebase.subscribeTopic("tw_eew")
 	}
-	/*
-	if(setting.get("RFPLUS")){
-		firebase.subscribe("RFPLUS")
-	}*/
+	
 	if(setting.get("jp_eew")){
 		firebase.subscribeTopic("jp_eew")
 	}
@@ -248,11 +245,7 @@ async function onDeviceReady(){
 		if(c) firebase.subscribeTopic("tw_eew");
 		else firebase.unsubscribeTopic("tw_eew");
 	})
-	/*
-	setting.subscribe("RFPLUS", (c) => {
-		if(c) firebase.subscribe("RFPLUS");
-		else firebase.unsubscribe("RFPLUS");
-	})*/
+	
 	setting.subscribe("jp_eew", (c) => {
 		if(c) firebase.subscribeTopic("jp_eew");
 		else firebase.unsubscribeTopic("jp_eew");
