@@ -415,7 +415,7 @@
             
         </div>
         <div id="settingPage" class="app settingPage">
-            <h2>登入RFEQ帳號</h2>
+            <h2>RFEQ帳號</h2>
             <div id="login">
                 <label for="email">
                     <p>電子郵件地址:</p>
@@ -427,7 +427,11 @@
                 <input id="password" name="password" type="password">
                 <button id="login_btn" class="login_btn">登入</button>
             </div>
+            <div id="waiting" style="display: none;">
+                <p>等待伺服器連線中，請稍候</p>
+            </div>
             <div id="user" style="display: none;">
+                <p>歡迎 <span id="login_user"></span></p>
                 <button id="logout_btn" class="login_btn">登出</button>
             </div>
             <hr/>
