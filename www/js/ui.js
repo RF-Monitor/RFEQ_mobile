@@ -77,13 +77,21 @@ handle.addEventListener('touchend', () => {
     sheet.style.transform = ''; // 回歸 class 控制
 });
 
-export function login(){
+export function login(username){
     document.getElementById("login").style.display = "none";
+    document.getElementById("waiting").style.display = "none";
     document.getElementById("user").style.display = "block";
+    document.getElementById("login_user").innerHTML = username;
+}
+export function loggingin(){
+    document.getElementById("login").style.display = "none";
+    document.getElementById("waiting").style.display = "block";
+    document.getElementById("user").style.display = "none";
 }
 export function logout(){
     document.getElementById("login").style.display = "block";
     document.getElementById("user").style.display = "none";
+    document.getElementById("waiting").style.display = "none";
 }
 
 class MyRFsensor{
@@ -189,6 +197,7 @@ class MyRFsensorList{
 export default {
     initSwitchPage,
     login,
+    loggingin,
     logout,
     MyRFsensor,
     MyRFsensorList
