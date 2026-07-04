@@ -271,6 +271,8 @@ async function onDeviceReady(){
 
 	ui.initSwitchPage(map, map2)
 
+	ui.startClock()
+
 	/*----------主要功能處理----------*/
     let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
@@ -283,12 +285,16 @@ async function onDeviceReady(){
 	let Station = new StationManager(map);
 
 	/*----------websocket連線----------*/
+	ui.loggingin();
 	websocketManager.ws_init(EEW,report,Station);
+	websocketManager.onStatus((status) =>{
+		ui.showServerStatus(status);
+	})
 	await websocketManager.ws_connect();
 	if(setting.get("loginKey")){
 		const result = await websocketManager.login(setting.get("loginKey"));
 		if(result.status == "success"){
-			ui.login();
+			ui.login(result.user);
 		}else{
 			ui.logout();
 		}
