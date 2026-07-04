@@ -94,6 +94,58 @@ export function logout(){
     document.getElementById("waiting").style.display = "none";
 }
 
+export function startClock(){
+    setInterval(() => {
+        var myDate = new Date((Date.now()));
+        myDate.getYear();        // 獲取當前年份(2位)
+        myDate.getFullYear();    // 獲取完整的年份(4位,1970-????)
+        myDate.getMonth();       // 獲取當前月份(0-11,0代表1月)
+        myDate.getDate();        // 獲取當前日(1-31)
+        myDate.getDay();         // 獲取當前星期X(0-6,0代表星期天)
+        myDate.getTime();        // 獲取當前時間(從1970.1.1開始的毫秒數)
+        myDate.getHours();       // 獲取當前小時數(0-23)
+        myDate.getMinutes();     // 獲取當前分鐘數(0-59)
+        myDate.getSeconds();     // 獲取當前秒數(0-59)
+        myDate.getMilliseconds();    // 獲取當前毫秒數(0-999)
+        myDate.toLocaleDateString();     // 獲取當前日期
+        var mytime = myDate.toLocaleTimeString();     // 獲取當前時間
+        myDate.toLocaleString();        // 獲取日期與時間
+
+        Date.prototype.Format = function (fmt) { // author: meizz
+            var o = {
+                "M+": this.getMonth() + 1, // 月份
+                "d+": this.getDate(), // 日
+                "h+": this.getHours(), // 小時
+                "m+": this.getMinutes(), // 分
+                "s+": this.getSeconds(), // 秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+                "S": this.getMilliseconds() // 毫秒
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+
+        var time2 = new Date().Format("yyyy/MM/dd hh:mm:ss");
+
+        document.getElementById("time_now").innerHTML = time2; 
+    }, 1000)
+}
+
+export function showServerStatus(status){
+    if(status.status == "connecting"){
+        document.getElementById("server_status").innerHTML = "連線中...";
+        document.getElementById("server_status").style.color = "yellow";
+    }
+    if(status.status == "connected"){
+        document.getElementById("server_status").innerHTML = "已連線";
+        document.getElementById("server_status").style.color = "green";
+    }
+
+}
+
 class MyRFsensor{
     constructor(sensor){
         this.sensor = sensor;
@@ -199,6 +251,8 @@ export default {
     login,
     loggingin,
     logout,
+    startClock,
+    showServerStatus,
     MyRFsensor,
     MyRFsensorList
 }

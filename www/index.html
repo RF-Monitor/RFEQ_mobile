@@ -56,6 +56,22 @@
             overflow-y: scroll;
         }
 
+        .server_status{
+            display: flex;
+            text-align: center;
+            padding: 5px;
+            height: fit-content;
+            width: fit-content;
+            position: absolute;
+            top:5px;
+            right: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            background-color: white;
+            color: black;
+            z-index: 20;
+        }
+
         /* drag handle */
         .drag_handle {
             width: 60px;
@@ -240,20 +256,24 @@
                 background-color: #121212;
                 color: #ffffff;
             }
+            .server_status{
+                background-color: #363636;
+                color: #ffffff;
+            }
             .nav_main {
-                background-color: #1e1e1e;
+                background-color: #363636;
                 color: #ffffff;
             }
             .navbar {
-                background-color: #1e1e1e;
+                background-color: #363636;
                 color :#ffffff
             }
             .sensor{
-                background-color: #1e1e1e;
+                background-color: #363636;
                 color :#ffffff
             }
             .modal{
-                background-color: #1e1e1e;
+                background-color: #363636;
                 color :#ffffff
             }
         }
@@ -264,7 +284,10 @@
                 <div id='mapid' class="map"></div>
                 <!--地震報告地圖-->
                 <div id="map_report" class="map" style="z-index: 2; display: none;"></div>
-                
+                <div class="server_status">
+                    <div id="time_now" style="padding: 5px;">2026-07-05 00:02:12</div> 
+                    <div style="padding: 5px;">|</div> 
+                    <div id="server_status" style="padding: 5px; color: yellow;">等待連線</div></div>
                 <div class="nav_main">
                     <div class="drag_handle"></div>
                     <div class="eew_list">

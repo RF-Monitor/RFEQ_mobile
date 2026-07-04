@@ -7,6 +7,8 @@ let stationManager = null;
 let socket = null
 let loginResolver = null;
 
+let onStatusCallback = null;
+
 function ws_init(EEW,report,station){
 	EEWManager = EEW;
 	reportManager = report;
@@ -16,6 +18,7 @@ function ws_init(EEW,report,station){
 export function ws_connect(){
 	return new Promise((resolve, reject) => {
 		
+		onStatusCallback?.({"status": "connecting"})
 		socket = new WebSocket("wss://rptes.com:443/ws/");//ws://RFEQSERVER.myqnapcloud.com:8788
 		
 		socket.onopen = function() {
@@ -35,6 +38,7 @@ export function ws_connect(){
                         "report_num":1,
                         "final":false});
 			*/
+			onStatusCallback?.({"status": "connected"})
 			resolve(socket); // 這裡才代表「真的連上」
 		}
 		
@@ -118,10 +122,15 @@ export function login(verifyKey){
 	});
 }
 
+export function onStatus(callback){
+	onStatusCallback = callback;
+}
+
 const WebsocketManager = {
     ws_init,
     ws_connect,
-	login
+	login,
+	onStatus
 };
 
 export default WebsocketManager;
