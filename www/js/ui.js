@@ -26,6 +26,12 @@ export function initSwitchPage(map, map2){
     document.getElementById("page1").style.display = "block";
 }
 
+export function showReport(){
+    document.getElementById("reportPage").style.display = "block";
+}
+document.getElementById("report_return").addEventListener("click", () => {
+    document.getElementById("reportPage").style.display = "none";
+})
 
 /*----------資訊抽屜開合----------*/
 const sheet = document.querySelector('.nav_main');
@@ -253,6 +259,7 @@ export default {
     logout,
     startClock,
     showServerStatus,
+    showReport,
     MyRFsensor,
     MyRFsensorList
 }

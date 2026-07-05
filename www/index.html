@@ -164,6 +164,84 @@
             width:20%;
         }
 
+        /*----------地震報告頁----------*/
+        .report_page{
+            position: absolute;
+            left: 0;
+            top: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 999;
+        }
+        .report_container{
+            position: absolute;
+            left: 5px;
+            bottom: 5px;
+
+            width: calc(100% - 10px);
+            height: fit-content;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+
+            z-index: 1000;
+        }
+        .report_return{
+            position: absolute;
+            left: 8px;
+            top: 8px;
+
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+            border-radius: 12px;
+
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #222;
+
+            cursor: pointer;
+            z-index: 1000;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            transition: background-color 0.15s, transform 0.15s, box-shadow 0.15s;
+        }
+
+        .report_return svg{
+            width: 26px;
+            height: 26px;
+
+            stroke: currentColor;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .report_return:hover{
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+        }
+
+        .report_return:active{
+            transform: scale(0.94);
+        }
+
+        .report_return:focus-visible{
+            outline: 2px solid #2684ff;
+            outline-offset: 2px;
+        }
+
         /*----------RF-sensor頁----------*/
         #page2{
 
@@ -260,6 +338,18 @@
                 background-color: #363636;
                 color: #ffffff;
             }
+            .report_container{
+                background-color: #363636;
+                color: #ffffff;
+            }
+            .report_return{
+                background-color: #363636;
+                color: #ffffff;
+            }
+            .report_return:hover{
+                background-color: #414141;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+            }
             .nav_main {
                 background-color: #363636;
                 color: #ffffff;
@@ -283,7 +373,6 @@
                 <!--主地圖-->
                 <div id='mapid' class="map"></div>
                 <!--地震報告地圖-->
-                <div id="map_report" class="map" style="z-index: 2; display: none;"></div>
                 <div class="server_status">
                     <div id="time_now" style="padding: 5px;">2026-07-05 00:02:12</div> 
                     <div style="padding: 5px;">|</div> 
@@ -406,6 +495,17 @@
                         
                     </div>
                 </div>
+        </div>
+        <div id="reportPage" class="report_page" style="display: none;">
+            <div id="map_report" class="map"></div>
+            <div id="report_container" class="report_container">
+                
+            </div>
+            <button id="report_return" class="report_return" type="button" aria-label="返回">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18L9 12L15 6" />
+                </svg>
+            </button>
         </div>
         <div id="page2" class="app">
             <div id="RFsensorList" style="width: 100%;">
