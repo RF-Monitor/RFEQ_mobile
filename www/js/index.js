@@ -84,7 +84,7 @@ async function loadTownId() {
 }
 
 async function mapInit(mapid){
-    const map = L.map(mapid, {zoomSnap: 0.25, zoomDelta: 0.25}).setView([23.7, 120.924610], 8);
+    const map = L.map(mapid, {zoomSnap: 0.25, zoomDelta: 0.25, zoomControl:false}).setView([23.7, 120.924610], 8);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { 
         minZoom: 3, 
@@ -279,7 +279,13 @@ async function onDeviceReady(){
 		EEW.tick(Date.now())
 	},100);
 
-	let report = new reportManager();
+	let report = new reportManager(map2);
+	report.onClick(async (id) => {
+		ui.showReport();
+		const distribution =  await report.getDistribution(id)
+		report.UI.showReport(distribution)
+		report.mapRenderer.renderDistribution(distribution);
+	})
 	report.init();
 
 	let Station = new StationManager(map);

@@ -174,11 +174,12 @@ class InfoMapRenderer{
 
 class reportUI{
     constructor(){
-        this.dom = document.getElementById("reports")
+        this.reportList = document.getElementById("reports")
+        this.report = document.getElementById("report_container")
     }
 
     update(list, {onClick} = {}){
-        this.dom.innerHTML = "";
+        this.reportList.innerHTML = "";
         for(let report of list){
             let container = document.createElement("div");
             container.id =  report.id;
@@ -187,7 +188,7 @@ class reportUI{
                 <div class="report_content">
                     <div class="report_maxShindo">
                         <!--<h3 align="center" style="margin: 0;">最大震度</h3>-->
-                        <img src="img/shindo/${report.maxShindo}.png" style="width:100%;">
+                        <img src="img/shindo/${report.maxShindo}.png" style="width:100%; border-radius: 5px">
                     </div>
                     <div class="report_details">
                         <h2 style="margin-bottom: 0;">${report.epicenter}</h2>
@@ -202,8 +203,35 @@ class reportUI{
                 console.log("click")
                 onClick?.(container.id)
             })
-            this.dom.appendChild(container);
+            this.reportList.appendChild(container);
         }
+    }
+    showReport(distribution){
+        let info = distribution;
+        let cwbno = info["info"]["cwbNo"];
+		let epicenter = info["info"]["epicenter"];
+		let epicenter_lat = info["info"]["lat"];//float
+		let epicenter_lon = info["info"]["lon"];//float
+		let datetime = info["info"]["datetime"];
+		let magnitude = info["info"]["magnitude"];
+		let max_shindo = info["info"]["max_shindo"];
+		let depth = info["info"]["depth"];
+        this.report.innerHTML = `<div class="eew_tile">
+                    <div class="report_content">
+                        <div class="report_maxShindo">
+                            <img src="img/shindo/${max_shindo}.png" style="width:100%; border-radius: 5px">
+                        </div>
+                        <div class="report_details">
+                            <h2 style="margin-bottom: 0;">${epicenter}</h2>
+                            <p>${datetime}</p>
+                        </div>
+                        <div class="report_scale">
+                            <h2 style="text-align: center;justify-content: center;">${magnitude}</h2>
+                        </div>
+                                    
+                    </div>
+                </div>`
+        
     }
 }
 
