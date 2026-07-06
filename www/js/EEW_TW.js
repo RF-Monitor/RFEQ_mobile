@@ -9,9 +9,12 @@ class EEWTWManager {
         this.onNewAlert = onNewAlert;
         this.onAlertUpdate = onAlertUpdate
         this.onAlertEnd = onAlertEnd;
+
+        this.updateEmptyMessage();
     }
 
     handleAlert(userlat, userlon, alert) {
+        this.updateEmptyMessage();
         if (!this.instances.has(alert.id)) {
             this.instances.set(alert.id, new EEWTW(alert, new EEWTWMapRenderer(this.map,this.locations,this.town_ID_list,this.town_line,this.leaflet), new EEWTWUI));
             alert = this.instances.get(alert.id).handleNew(userlat, userlon, alert);
@@ -29,13 +32,29 @@ class EEWTWManager {
             if (EEW.checkExpired(now)) {
                 EEW.destroy();          // 清理地圖/UI
                 this.instances.delete(key);
-                onAlertEnd?.();
+                this.updateEmptyMessage();
+                this.onAlertEnd?.();
             }
         }
     }
 
     hasAlert(){
         return this.instances.size > 0;
+    }
+
+    updateEmptyMessage() {
+        const container = document.getElementById("eew");
+
+        if (this.instances.size === 0) {
+            container.innerHTML = `
+                <div class="eew_empty">
+                    目前沒有地震速報
+                </div>
+            `;
+        } else {
+            const empty = container.querySelector(".eew_empty");
+            if (empty) empty.remove();
+        }
     }
 
 }
