@@ -35,17 +35,19 @@ document.getElementById("report_return").addEventListener("click", () => {
 
 /*----------資訊抽屜開合----------*/
 const sheet = document.querySelector('.nav_main');
-const handle = document.querySelector('.drag_handle');
+const handle = document.querySelector('.drag_area');
 
 let startY = 0;
 let currentY = 0;
 let isDragging = false;
+let currentPosition = "mid";
 
 // 點擊 handle 切換開關
+/*
 handle.addEventListener('click', () => {
     sheet.classList.toggle('open');
 });
-
+*/
 // 觸控拖曳開始
 handle.addEventListener('touchstart', (e) => {
     startY = e.touches[0].clientY;
@@ -75,9 +77,26 @@ handle.addEventListener('touchend', () => {
     isDragging = false;
     let delta = currentY - startY;
 
-    if (Math.abs(delta) > 120) {
-        if (delta > 0) sheet.classList.remove('open');  // 下滑 → 收回
-        else sheet.classList.add('open');               // 上滑 → 展開
+    // 滑動距離超過60
+    if (Math.abs(delta) > 60) {
+        if (delta > 0){// 下滑 → 收回
+            if(currentPosition == "mid"){
+                sheet.classList.add('close');
+                currentPosition = "close";
+            }else if(currentPosition == "open"){
+                sheet.classList.remove('open');
+                currentPosition = "mid";
+            }
+        } else {// 上滑 → 展開
+            if(currentPosition == "mid"){   
+                sheet.classList.add('open');
+                currentPosition = "open";
+            }else if(currentPosition == "close"){
+                sheet.classList.remove('close');
+                currentPosition = "mid";
+            }
+                           
+        }
     }
 
     sheet.style.transform = ''; // 回歸 class 控制
