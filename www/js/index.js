@@ -84,7 +84,7 @@ async function loadTownId() {
 }
 
 async function mapInit(mapid){
-    const map = L.map(mapid, {zoomSnap: 0.25, zoomDelta: 0.25, zoomControl:false}).setView([23.7, 120.924610], 8);
+    const map = L.map(mapid, {zoomSnap: 0.25, zoomDelta: 0.25, zoomControl:false}).setView([22.7, 120.924610], 7.5);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { 
         minZoom: 3, 
