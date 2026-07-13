@@ -6,6 +6,8 @@ let reportManager = null;
 let stationManager = null;
 let socket = null
 let loginResolver = null;
+let latestPGA = null;
+let latestPGAResolvers = [];
 
 let onStatusCallback = null;
 
@@ -87,6 +89,11 @@ export function ws_connect(){
 			//測站
 			if(data["type"] == "pga"){
 				console.log(data["content"])
+				latestPGA = data["content"];
+				for(const resolve of latestPGAResolvers){
+					resolve(latestPGA);
+				}
+				latestPGAResolvers = [];
 				let content = data["content"]
 				stationManager.updateAll(content);
 			}
@@ -126,11 +133,32 @@ export function onStatus(callback){
 	onStatusCallback = callback;
 }
 
+export function getLatestPGA(timeout = 5000){
+	if(latestPGA !== null){
+		return Promise.resolve(latestPGA);
+	}
+
+	return new Promise((resolve, reject) => {
+		const resolver = pga => {
+			clearTimeout(timer);
+			resolve(pga);
+		};
+
+		const timer = setTimeout(() => {
+			latestPGAResolvers = latestPGAResolvers.filter(item => item !== resolver);
+			reject(new Error("等待 PGA 資料逾時"));
+		}, timeout);
+
+		latestPGAResolvers.push(resolver);
+	});
+}
+
 const WebsocketManager = {
     ws_init,
     ws_connect,
 	login,
-	onStatus
+	onStatus,
+	getLatestPGA
 };
 
 export default WebsocketManager;
