@@ -256,20 +256,44 @@
         }
 
         /*----------RF-sensor頁----------*/
-        #page2{
-
+        .page2{
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+            font-family: sans-serif;
+            color: #222;
+            background: #f2f2f2;
         }
         .sensor{
             width: calc(100% - 10px);
             height: fit-content;
             /*padding: 10px;*/
-            margin: 5px;
+            margin-bottom: 10px;
+            padding-left: 10px;
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             display: flex;
         }
         .sensor_text{
             width: 70%;
+        }
+        .newSensor_btn{
+            width: calc(100% - 10px);
+            padding: 10px 18px;
+            border-radius: 8px;
+
+            background: linear-gradient(135deg, #4f8cff, #3a6ee8);
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+
+            border: none;
+            cursor: pointer;
+
+            transition: all 0.2s ease;
         }
 
         .modal-overlay {
@@ -302,6 +326,23 @@
             border-radius: 8px;
 
             background: linear-gradient(135deg, #4f8cff, #3a6ee8);
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+
+            border: none;
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+        }
+        .reset_btn {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+
+            background: linear-gradient(135deg, #ff4f4f, #e83a3a);
             color: #ffffff;
 
             font-size: 14px;
@@ -370,6 +411,10 @@
             .navbar {
                 background-color: #363636;
                 color :#ffffff
+            }
+            .page2{
+                background-color: #121212;
+                color: #ffffff;
             }
             .sensor{
                 background-color: #363636;
@@ -522,11 +567,13 @@
                 </svg>
             </button>
         </div>
-        <div id="page2" class="app">
+        <div id="page2" class="app page2">
+            <h3>我的測站列表</h3>
             <div id="RFsensorList" style="width: 100%;">
                 <!--我的RF-sensor列表-->
 
             </div>
+            <button id="newSensor" class="newSensor_btn">申請 / 購買新的RF-sensor</button>
             <div id="modalOverlay" class="modal-overlay" style="display:none;">
                 <div id="RFsensorPage" class="modal">
                     <h3 id="sensorID"></h3>
@@ -545,12 +592,10 @@
                     <input type="number" id="sensorLonInput">
                     <hr/>
                     <button id="submit" class="submit_btn">套用</button>
+                    <button id="reset" class="reset_btn">重啟測站</button>
                     <button id="closeModal" class="cancel_btn">返回</button>
                 </div>
             </div>
-        </div>
-        <div id="RFsensorPage" class="app" style="display: none;">
-            
         </div>
         <div id="settingPage" class="app settingPage">
             <h2>RFEQ帳號</h2>
