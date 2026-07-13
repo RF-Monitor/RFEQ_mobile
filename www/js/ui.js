@@ -177,6 +177,7 @@ class MyRFsensor{
         this.pageOverlay = document.getElementById("modalOverlay");
         this.page = document.getElementById("RFsensorPage");
         this.submitButton = document.getElementById("submit");
+        this.resetButton = document.getElementById("reset");
         this.closeButton = document.getElementById("closeModal");
 
         this.closeButton.addEventListener("click", () => {
@@ -188,7 +189,7 @@ class MyRFsensor{
         this.latInput = document.getElementById("sensorLatInput");
         this.lonInput = document.getElementById("sensorLonInput");
     }
-    show({ submit } = {}){
+    show({ submit, reset } = {}){
         this.pageOverlay.style.display = "flex";
         this.submitButton.addEventListener("click", () => {
             const id = this.sensor.data.id;
@@ -196,6 +197,10 @@ class MyRFsensor{
             const lat = this.latInput.value;
             const lon = this.lonInput.value;
             submit?.({id, name, lat, lon})
+        })
+        this.resetButton.addEventListener("click", () => {
+            const id = this.sensor.data.id;
+            reset?.(id)
         })
     }
     hide(){
@@ -236,10 +241,11 @@ class MyRFsensorList{
             sensorDiv.className = "sensor";
 
             // 圖片
+            /*
             const img = document.createElement("img");
             img.src = "img/sensor.png";
             img.style.width = "30%";
-
+            */
             // 文字區塊
             const textDiv = document.createElement("div");
             textDiv.className = "sensor_text";
@@ -258,7 +264,7 @@ class MyRFsensorList{
             textDiv.appendChild(h5_status);
             textDiv.appendChild(h5_id);
 
-            sensorDiv.appendChild(img);
+            //sensorDiv.appendChild(img);
             sensorDiv.appendChild(textDiv);
 
             //點擊後事件
@@ -268,6 +274,42 @@ class MyRFsensorList{
 
             this.container.appendChild(sensorDiv);
         });
+    }
+    renderLoading(){
+        this.container.innerHTML = "";
+
+        const sensorDiv = document.createElement("div");
+        sensorDiv.className = "sensor";
+
+        const h5_status = document.createElement("h5");
+        h5_status.textContent = "載入中，請稍候...";
+        sensorDiv.appendChild(h5_status)
+
+        this.container.appendChild(sensorDiv);
+    }
+    renderEmpty(){
+        this.container.innerHTML = "";
+
+        const sensorDiv = document.createElement("div");
+        sensorDiv.className = "sensor";
+
+        const h5_status = document.createElement("h5");
+        h5_status.textContent = "目前沒有測站";
+        sensorDiv.appendChild(h5_status)
+
+        this.container.appendChild(sensorDiv);
+    }
+    renderNotLoggedIn(){
+        this.container.innerHTML = "";
+
+        const sensorDiv = document.createElement("div");
+        sensorDiv.className = "sensor";
+
+        const h5_status = document.createElement("h5");
+        h5_status.textContent = "登入以查看您擁有的RF-sensor";
+        sensorDiv.appendChild(h5_status)
+
+        this.container.appendChild(sensorDiv);
     }
 }
 
