@@ -17,14 +17,16 @@ async function getMyRFsensor(server, key){
     return data;
 }
 
-async function getRFsensorData(server, id){
-    const res = await fetch(`https://${server}/api/RFEQ/pga?id=${id}`)
+async function getRFsensorData(server, id = null){
+    let url = `https://${server}/api/RFEQ/pga`
+    if(id) url = `https://${server}/api/RFEQ/pga?id=${id}`
+    const res = await fetch(url);
     if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
     }
 
     const data = await res.json();
-    return data.data[0];
+    return data.data;
 
 }
 
@@ -47,8 +49,28 @@ async function setRFsensor(data, username, loginKey){
     return true
 
 }
+
+async function resetRFsensor(id, username, loginKey){
+    const res = await fetch(`https://rptes.com/api/member/resetRFsensor`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id,
+                username,
+                loginKey 
+            })
+    });
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return true
+}
 export default {
     getMyRFsensor,
     getRFsensorData,
-    setRFsensor
+    setRFsensor,
+    resetRFsensor
 }
