@@ -185,8 +185,8 @@ function settingsInit(){
 		if(result.success){
 			setting.set("loginUser", email);
 			setting.set("loginKey", result.loginKey);
-			ui.login();
-			await websocketManager.login(result.loginKey);
+			const result2 = await websocketManager.login(result.loginKey);
+			ui.login(result2.user);
 		}else{
 			alert("登入失敗!請檢查帳號密碼是否正確");
 			ui.logout();
@@ -290,6 +290,9 @@ async function onDeviceReady(){
 
 	let Station = new StationManager(map);
 
+	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("RFsensorList"))
+	myRFsensorList.renderLoading();
+
 	/*----------websocket連線----------*/
 	ui.loggingin();
 	websocketManager.ws_init(EEW,report,Station);
@@ -304,10 +307,12 @@ async function onDeviceReady(){
 		}else{
 			ui.logout();
 		}
+	}else{
+		ui.logout();
 	}
 	
 	/*----------myRFsensor----------*/
-	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("RFsensorList"))
+	
 	const onSensorSelect = (sensor) => {
 		const myRFsensor = new ui.MyRFsensor(sensor);
 		myRFsensor.show({
@@ -316,22 +321,35 @@ async function onDeviceReady(){
 				if(await myRFsensorHandler.setRFsensor(data, setting.get("loginUser"), setting.get("loginKey"))){
 					window.alert("設定成功");
 				}
+			},
+			reset:async(id) => {
+				if(await myRFsensorHandler.resetRFsensor(id, setting.get("loginUser"), setting.get("loginKey"))){
+					window.alert("已發出重設指令");
+				}
 			}
 		});
 		myRFsensor.render();
 	}
 	if(setting.get("loginKey")){
-		const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
-		await Promise.all(
-			RFsensorList.map(async (sensor) => {
-				const id = sensor.id;
-				const data = await myRFsensorHandler.getRFsensorData(server_url, id);
-				sensor.data = data;
-				myRFsensorList.add(sensor);
-			})
-		);
+		try{
+			const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
+			const data = await websocketManager.getLatestPGA();
+			await Promise.all(
+				RFsensorList.map(async (sensor) => {
+					const id = sensor.id;
+					sensor.data = data.data.find((station) => {
+						return station.id == id
+					});
+					myRFsensorList.add(sensor);
+				})
+			);
 
-		myRFsensorList.render(onSensorSelect);
+			myRFsensorList.render(onSensorSelect);
+		}catch(err){
+			console.error(err);
+		}
+	}else{
+		myRFsensorList.renderNotLoggedIn();
 	}
 
     /*EEW.handleAlert(24.8,121.0,alert);*/
