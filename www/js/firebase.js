@@ -13,7 +13,7 @@ function setupAndroidNotificationChannels() {
             visibility: 1
         },
         {
-            id: "earthquake_report",
+            id: "report",
             name: "地震報告",
             description: "地震發生後的詳細報告",
             importance: 3,
