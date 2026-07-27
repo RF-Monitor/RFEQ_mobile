@@ -1,3 +1,47 @@
+function setupAndroidNotificationChannels() {
+    if (cordova.platformId !== "android") return;
+
+    const channels = [
+        {
+            id: "eew_alert",
+            name: "地震速報",
+            description: "臺灣與日本地震速報",
+            importance: 4,
+            vibration: [0, 500, 150, 500, 150, 1000],
+            sound: "default",
+            badge: true,
+            visibility: 1
+        },
+        {
+            id: "earthquake_report",
+            name: "地震報告",
+            description: "地震發生後的詳細報告",
+            importance: 3,
+            vibration: [0, 250],
+            sound: "default",
+            badge: true,
+            visibility: 1
+        },
+        {
+            id: "pga_alert",
+            name: "測站警報",
+            description: "測站即時震度與 PGA 警報",
+            importance: 4,
+            vibration: [0, 250, 100, 250],
+            sound: "default",
+            badge: true,
+            visibility: 1
+        }
+    ];
+
+    channels.forEach(channel => {
+        FirebasePlugin.createChannel(
+            channel,
+            () => console.log(`Channel created: ${channel.id}`),
+            error => console.error(`Channel error (${channel.id}):`, error)
+        );
+    });
+}
 
 function requestNotificationPermission(permissions) {
     permissions.requestPermission(
@@ -5,6 +49,7 @@ function requestNotificationPermission(permissions) {
         function (status) {
             if (status.hasPermission) {
                 console.log("通知權限已取得");
+                setupAndroidNotificationChannel();
             } else {
                 console.warn("使用者拒絕通知權限");
 
@@ -30,6 +75,7 @@ export function init(){
             function (status) {
                 if (status.hasPermission) {
                     //setupFCM();
+                    setupAndroidNotificationChannel();
                 } else {
                     requestNotificationPermission(permissions);
                 }
