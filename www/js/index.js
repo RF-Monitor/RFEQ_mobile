@@ -228,18 +228,26 @@ async function onDeviceReady(){
 	
 	if(setting.get("tw_eew")){
 		firebase.subscribeTopic("tw_eew")
+	}else{
+		firebase.unsubscribeTopic("tw_eew");
 	}
 	
 	if(setting.get("jp_eew")){
 		firebase.subscribeTopic("jp_eew")
+	}else{
+		firebase.unsubscribeTopic("jp_eew");
 	}
 	if(setting.get("report")){
 		firebase.subscribeTopic("report")
+	}else{
+		firebase.unsubscribeTopic("report");
 	}
 	if(setting.get("pga")){
 		firebase.subscribeTopic("pga")
+	}else{
+		firebase.unsubscribeTopic("pga");
 	}
-
+	
 	//監聽設定
 	setting.subscribe("tw_eew", (c) => {
 		if(c) firebase.subscribeTopic("tw_eew");
@@ -340,6 +348,7 @@ async function onDeviceReady(){
 					sensor.data = data.data.find((station) => {
 						return station.id == id
 					});
+					sensor.triggerList = await myRFsensorHandler.getRFsensorTriggerList(server_url, id);
 					myRFsensorList.add(sensor);
 				})
 			);

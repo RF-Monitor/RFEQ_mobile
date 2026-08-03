@@ -1,4 +1,4 @@
-import { timestampNow } from "./time.js";
+import { timestampNow, formatTimestamp } from "./time.js";
 
 /*----------切頁----------*/
 export function initSwitchPage(map, map2){
@@ -188,6 +188,9 @@ class MyRFsensor{
         this.nameInput = document.getElementById("sensorNameInput");
         this.latInput = document.getElementById("sensorLatInput");
         this.lonInput = document.getElementById("sensorLonInput");
+
+        this.triggerListContainer = document.getElementById("sensorTriggerRecords");
+        this.triggerEmpty = document.getElementById("sensorTriggerEmpty");
     }
     show({ submit, reset } = {}){
         this.pageOverlay.style.display = "flex";
@@ -211,6 +214,28 @@ class MyRFsensor{
         this.nameInput.value = this.sensor.data.name;
         this.latInput.value = this.sensor.data.lat;
         this.lonInput.value = this.sensor.data.lon;
+
+        // triggerList
+        for(const record of this.sensor.triggerList){
+            this.triggerEmpty.style.display = "none";
+
+            const tr = document.createElement("tr");
+
+            const tdTime = document.createElement("td");
+            tdTime.innerText = formatTimestamp(record.start_time);
+            const tdPga = document.createElement("td");
+            tdPga.innerText = record.peak_pga;
+            const tdShindo = document.createElement("td");
+            tdShindo.innerText = record.peak_shindo;
+
+            tr.appendChild(tdTime);
+            tr.appendChild(tdPga);
+            tr.appendChild(tdShindo);
+
+            this.triggerListContainer.appendChild(tr);
+        }
+
+
     }
 }
 

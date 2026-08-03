@@ -354,6 +354,78 @@
 
             transition: all 0.2s ease;
         }
+        .sensor_trigger_section {
+            margin-top: 18px;
+        }
+
+        .sensor_trigger_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .sensor_trigger_header h4 {
+            margin: 0;
+        }
+
+        .sensor_trigger_count {
+            padding: 3px 8px;
+            border-radius: 999px;
+            background-color: #e8eefc;
+            color: #315fc4;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .sensor_trigger_list {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+
+        .sensor_trigger_table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: 14px;
+        }
+
+        .sensor_trigger_table th,
+        .sensor_trigger_table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+            word-break: break-word;
+        }
+
+        .sensor_trigger_table th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #f3f5f8;
+            font-weight: 600;
+        }
+
+        .sensor_trigger_table th:first-child,
+        .sensor_trigger_table td:first-child {
+            width: 52%;
+            text-align: left;
+        }
+
+        .sensor_trigger_table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sensor_trigger_empty {
+            margin: 0;
+            padding: 22px 12px;
+            text-align: center;
+            color: #777777;
+        }
         .cancel_btn {
             display: inline-block;
             padding: 10px 18px;
@@ -423,6 +495,28 @@
             .modal{
                 background-color: #363636;
                 color :#ffffff
+            }
+            .sensor_trigger_count {
+                background-color: #26395f;
+                color: #a9c5ff;
+            }
+
+            .sensor_trigger_list {
+                background-color: #2d2d2d;
+                border-color: #555555;
+            }
+
+            .sensor_trigger_table th {
+                background-color: #444444;
+            }
+
+            .sensor_trigger_table th,
+            .sensor_trigger_table td {
+                border-bottom-color: #555555;
+            }
+
+            .sensor_trigger_empty {
+                color: #bbbbbb;
             }
         }
     </style>
@@ -590,6 +684,50 @@
                         <p>經度</p>
                     </label>
                     <input type="number" id="sensorLonInput">
+                    <hr/>
+
+                    <section class="sensor_trigger_section" aria-labelledby="sensorTriggerTitle">
+                        <div class="sensor_trigger_header">
+                            <h4 id="sensorTriggerTitle">觸發紀錄</h4>
+                            <!--<span id="sensorTriggerCount" class="sensor_trigger_count">0 筆</span>-->
+                        </div>
+
+                        <div class="sensor_trigger_list">
+                            <table class="sensor_trigger_table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">時間</th>
+                                        <th scope="col">PGA</th>
+                                        <th scope="col">震度</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sensorTriggerRecords">
+                                    <!--
+                                    <tr>
+                                        <td>2026-08-03 15:42:18</td>
+                                        <td>18.6 gal</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-08-02 21:16:04</td>
+                                        <td>7.2 gal</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2026-08-01 03:08:51</td>
+                                        <td>2.1 gal</td>
+                                        <td>0</td>
+                                    </tr>
+                                    -->
+                                </tbody>
+                            </table>
+
+                            <p id="sensorTriggerEmpty" class="sensor_trigger_empty">
+                                目前沒有觸發紀錄
+                            </p>
+                        </div>
+                    </section>
+
                     <hr/>
                     <button id="submit" class="submit_btn">套用</button>
                     <button id="reset" class="reset_btn">重啟測站</button>

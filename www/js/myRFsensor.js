@@ -30,6 +30,18 @@ async function getRFsensorData(server, id = null){
 
 }
 
+async function getRFsensorTriggerList(server, id){
+    const url = `https://${server}/api/RFEQ/eventHistory?id=${id}`
+    const res = await fetch(url);
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+
+}
+
 async function setRFsensor(data, username, loginKey){
     const res = await fetch(`https://rptes.com/api/member/setRFsensorConfig`, {
             method: "POST",
@@ -71,6 +83,7 @@ async function resetRFsensor(id, username, loginKey){
 export default {
     getMyRFsensor,
     getRFsensorData,
+    getRFsensorTriggerList,
     setRFsensor,
     resetRFsensor
 }
