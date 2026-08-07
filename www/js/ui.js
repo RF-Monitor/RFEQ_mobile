@@ -216,6 +216,7 @@ class MyRFsensor{
         this.lonInput.value = this.sensor.data.lon;
 
         // triggerList
+        this.triggerListContainer.innerHTML = "";
         for(const record of this.sensor.triggerList){
             this.triggerEmpty.style.display = "none";
 
@@ -227,10 +228,31 @@ class MyRFsensor{
             tdPga.innerText = record.peak_pga;
             const tdShindo = document.createElement("td");
             tdShindo.innerText = record.peak_shindo;
+            const tdWaveform = document.createElement("td");
+
+            const downloadButton = document.createElement("a");
+            downloadButton.className = "waveform_download_btn";
+            downloadButton.innerText = "下載";
+            if(record.start_time && record.end_time){
+                const sensorID = String(this.sensor.data.id).replace(/[\\/:*?"<>|]/g, "_");
+                const timestamp = String(record.start_time).replace(/[\\/:*?"<>|\s]/g, "_");
+
+                downloadButton.href = `https://rptes.com/RFEQdatabaseDownload/waveformImage?station=${encodeURIComponent(this.sensor.data.id)}&start=${encodeURIComponent(record.start_time)}&end=${encodeURIComponent(record.end_time)}`;
+                downloadButton.download = `${sensorID}_${timestamp}_waveform.png`;
+                downloadButton.setAttribute("aria-label", `下載 ${formatTimestamp(record.start_time)} 的波型圖`);
+            }else{
+                downloadButton.classList.add("is_disabled");
+                downloadButton.removeAttribute("href");
+                downloadButton.setAttribute("aria-disabled", "true");
+                downloadButton.title = "此紀錄缺少開始或結束時間";
+            }
+
+            tdWaveform.appendChild(downloadButton);
 
             tr.appendChild(tdTime);
             tr.appendChild(tdPga);
             tr.appendChild(tdShindo);
+            tr.appendChild(tdWaveform);
 
             this.triggerListContainer.appendChild(tr);
         }

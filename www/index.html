@@ -419,6 +419,39 @@
         .sensor_trigger_table tbody tr:last-child td {
             border-bottom: none;
         }
+        .sensor_trigger_table th:first-child,
+        .sensor_trigger_table td:first-child {
+            width: 42%;
+            text-align: left;
+        }
+
+        .sensor_trigger_table th:last-child,
+        .sensor_trigger_table td:last-child {
+            width: 86px;
+        }
+
+        .waveform_download_btn {
+            display: inline-block;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: #315fc4;
+            color: #ffffff;
+            font-size: 13px;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .waveform_download_btn:hover {
+            background-color: #264da5;
+        }
+
+        .waveform_download_btn.is_disabled {
+            background-color: #aaaaaa;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
         .sensor_trigger_empty {
             margin: 0;
@@ -699,6 +732,7 @@
                                         <th scope="col">時間</th>
                                         <th scope="col">PGA</th>
                                         <th scope="col">震度</th>
+                                        <th scope="col">波型圖</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sensorTriggerRecords">

@@ -223,7 +223,7 @@ async function onDeviceReady(){
 	settingsInit();
 
 	/*----------firebase----------*/
-	
+	/*
 	firebase.init();
 	
 	if(setting.get("tw_eew")){
@@ -247,7 +247,7 @@ async function onDeviceReady(){
 	}else{
 		firebase.unsubscribeTopic("pga");
 	}
-	
+	*/
 	//監聽設定
 	setting.subscribe("tw_eew", (c) => {
 		if(c) firebase.subscribeTopic("tw_eew");
