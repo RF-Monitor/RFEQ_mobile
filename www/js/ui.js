@@ -1,5 +1,7 @@
 import { timestampNow, formatTimestamp } from "./time.js";
+import myRFsensor from "./myRFsensor.js";
 
+const server_url = "rptes.com";
 /*----------切頁----------*/
 export function initSwitchPage(map, map2){
     const pages = ["page1", "page2", "settingPage"];
@@ -230,16 +232,38 @@ class MyRFsensor{
             tdShindo.innerText = record.peak_shindo;
             const tdWaveform = document.createElement("td");
 
-            const downloadButton = document.createElement("a");
+            const downloadButton = document.createElement("button");
             downloadButton.className = "waveform_download_btn";
             downloadButton.innerText = "下載";
             if(record.start_time && record.end_time){
-                const sensorID = String(this.sensor.data.id).replace(/[\\/:*?"<>|]/g, "_");
-                const timestamp = String(record.start_time).replace(/[\\/:*?"<>|\s]/g, "_");
+                downloadButton.addEventListener("click", async event => {
+                    event.preventDefault();
 
-                downloadButton.href = `https://rptes.com/RFEQdatabaseDownload/waveformImage?station=${encodeURIComponent(this.sensor.data.id)}&start=${encodeURIComponent(record.start_time)}&end=${encodeURIComponent(record.end_time)}`;
-                downloadButton.download = `${sensorID}_${timestamp}_waveform.png`;
-                downloadButton.setAttribute("aria-label", `下載 ${formatTimestamp(record.start_time)} 的波型圖`);
+                    const sensorID = String(this.sensor.data.id).replace(/[\\/:*?"<>|]/g, "_");
+                    const timestamp = String(record.start_time).replace(/[\\/:*?"<>|\s]/g, "_");
+
+                    try{
+                        downloadButton.innerText = "下載中";
+                        downloadButton.disabled = true;
+                        const blob = await myRFsensor.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
+                        const objectURL = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+
+                        link.href = objectURL;
+                        link.download = `${sensorID}_${timestamp}_waveform.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+
+                        URL.revokeObjectURL(objectURL);
+                    }catch(error){
+                        console.error(error);
+                        alert("波型圖下載失敗");
+                    }finally{
+                        downloadButton.innerText = "下載";
+                        downloadButton.disabled = false;
+                    }
+                });
             }else{
                 downloadButton.classList.add("is_disabled");
                 downloadButton.removeAttribute("href");
