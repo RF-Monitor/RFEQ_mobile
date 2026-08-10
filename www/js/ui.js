@@ -1,5 +1,6 @@
 import { timestampNow, formatTimestamp } from "./time.js";
 import myRFsensor from "./myRFsensor.js";
+import setting from "./setting.js";
 
 const server_url = "rptes.com";
 /*----------切頁----------*/
@@ -248,8 +249,8 @@ class MyRFsensor{
                         const token = setting.get("loginKey");
 
                         if(window.cordova){
-                            const savedPath = await downloadToPublicFolder(url, filename, token);
-                            alert(`波型圖已下載至 ${savedPath}`);
+                            const savedPath = myRFsensor.downloadToPublicFolder(url, filename, token);
+                            alert(`波型圖已下載至 「下載」資料夾，檔名: ${filename}`);
                         }else{
                             const blob = await myRFsensor.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
                             const objectURL = URL.createObjectURL(blob);
