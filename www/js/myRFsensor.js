@@ -83,19 +83,14 @@ async function resetRFsensor(id, username, loginKey){
     return true
 }
 
-async function downloadRFsensorWaveformImage (server, id, startTime, endTime) {
-    const url = `https://${server}/RFEQdatabaseDownload/waveformImage?station=${encodeURIComponent(id)}&start=${startTime}&end=${endTime}`;
-    const token = setting.get("loginKey");
-    const res = await fetch(url, {
-            method: "GET",
-            headers: {
-                "x-login-key": token? token : ""
-            }
-        });
-    if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    return res.blob();
+async function downloadRFsensorWaveformImage (url, filename, loginKey) {
+    return new Promise((resolve, reject) => {
+        cordova.exec(resolve, reject, "PublicDownload", "download", [
+            url,
+            filename,
+            loginKey || ""
+        ]);
+    });
 }
 
 export default {

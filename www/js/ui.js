@@ -243,19 +243,26 @@ class MyRFsensor{
                     const timestamp = String(record.start_time).replace(/[\\/:*?"<>|\s]/g, "_");
 
                     try{
-                        downloadButton.innerText = "下載中";
-                        downloadButton.disabled = true;
-                        const blob = await myRFsensor.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
-                        const objectURL = URL.createObjectURL(blob);
-                        const link = document.createElement("a");
+                        const filename = `${sensorID}_${timestamp}_waveform.png`;
+                        const url = `https://${server_url}/RFEQdatabaseDownload/waveformImage?station=${encodeURIComponent(this.sensor.data.id)}&start=${encodeURIComponent(record.start_time)}&end=${encodeURIComponent(record.end_time)}`;
+                        const token = setting.get("loginKey");
 
-                        link.href = objectURL;
-                        link.download = `${sensorID}_${timestamp}_waveform.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        link.remove();
+                        if(window.cordova){
+                            const savedPath = await downloadToPublicFolder(url, filename, token);
+                            alert(`波型圖已下載至 ${savedPath}`);
+                        }else{
+                            const blob = await myRFsensor.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
+                            const objectURL = URL.createObjectURL(blob);
+                            const link = document.createElement("a");
 
-                        URL.revokeObjectURL(objectURL);
+                            link.href = objectURL;
+                            link.download = filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+
+                            setTimeout(() => URL.revokeObjectURL(objectURL), 1000);
+                        }
                     }catch(error){
                         console.error(error);
                         alert("波型圖下載失敗");
