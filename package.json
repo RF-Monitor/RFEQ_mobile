@@ -16,7 +16,8 @@
     "com.rptes.publicdownload": "file:plugins-local/public-download",
     "cordova-android": "^14.0.1",
     "cordova-plugin-android-permissions": "^1.1.5",
-    "cordova-plugin-firebasex": "^19.0.1"
+    "cordova-plugin-firebasex": "^19.0.1",
+    "cordova-plugin-purchase": "^13.17.2"
   },
   "cordova": {
     "platforms": [
@@ -25,7 +26,8 @@
     "plugins": {
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-firebasex": {},
-      "com.rptes.publicdownload": {}
+      "com.rptes.publicdownload": {},
+      "cordova-plugin-purchase": {}
     }
   }
 }
