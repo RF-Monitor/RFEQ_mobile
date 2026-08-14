@@ -27,4 +27,5 @@ node_modules/
 
 /build
 google-services.json
-
+upload-keystore.jks
+build.json
