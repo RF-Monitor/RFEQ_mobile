@@ -362,7 +362,6 @@ async function onDeviceReady(){
 	}
 
     /*EEW.handleAlert(24.8,121.0,alert);*/
-
 }
 
 if (window.cordova) {
@@ -371,7 +370,54 @@ if (window.cordova) {
     console.log("Running in browser");
     onDeviceReady();  // 讓 UI 在瀏覽器也能測試
 }
+/*
+document.addEventListener('deviceready', initBilling, false);
 
+function initBilling() {
+    const { store, ProductType, Platform, LogLevel } = CdvPurchase;
 
+    store.verbosity = LogLevel.DEBUG;
 
+    store.register({
+        id: 'RFPLUS',
+        type: ProductType.PAID_SUBSCRIPTION,
+        platform: Platform.GOOGLE_PLAY
+    });
 
+    store.when()
+        .productUpdated(product => {
+            if (product.id === 'RFPLUS') {
+                const offer = product.getOffer();
+
+				//顯示金額
+                document.querySelector('#price').textContent = offer?.pricing?.price || '載入中';
+            }
+        })
+        .approved(transaction => {
+            // 正式環境應先送到後端驗證
+            transaction.verify();
+        })
+        .verified(receipt => {
+            //已付款/確認
+            receipt.finish();
+        })
+        .unverified(receipt => {
+            console.error('驗證失敗', receipt);
+        })
+        .finished(transaction => {
+            console.log('交易完成', transaction.transactionId);
+        })
+        .cancelled(() => {
+            console.log('使用者取消付款');
+        });
+
+    store.error(error => {
+        console.error('Billing error', error);
+    });
+
+    // 正式環境換成自己的 HTTPS 驗證端點
+    store.validator = 'https://api.example.com/google-play/validate';
+
+    store.initialize([Platform.GOOGLE_PLAY]);
+}
+*/
