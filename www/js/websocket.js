@@ -1,6 +1,7 @@
 
 //import { reportManager } from "./reports.js";
 //import { EEWTWManager } from "./EEW_TW.js";
+import { timestampNow } from "./time.js";
 let EEWManager = null
 let reportManager = null;
 let stationManager = null;
@@ -10,6 +11,11 @@ let latestPGA = null;
 let latestPGAResolvers = [];
 
 let onStatusCallback = null;
+
+let location = {
+	"lat": 24.81,
+	"lon": 121.02
+} 
 
 function ws_init(EEW,report,station){
 	EEWManager = EEW;
@@ -54,8 +60,10 @@ export function ws_connect(){
 			
 			//臺灣速報
 			if(data["type"] == "eew_tw"){
-				console.log(data["content"])
-				EEWManager.handleAlert(24.8,121.0,data["content"]);
+				console.log(data["content"]);
+				if(timestampNow(0) - data.content.time < 180000){
+					EEWManager.handleAlert(location.lat, location.lon, data.content);
+				}
 			}
 			
 			/*
