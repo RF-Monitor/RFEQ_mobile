@@ -49,7 +49,7 @@ function requestNotificationPermission(permissions) {
         function (status) {
             if (status.hasPermission) {
                 console.log("通知權限已取得");
-                setupAndroidNotificationChannel();
+                setupAndroidNotificationChannels();
             } else {
                 console.warn("使用者拒絕通知權限");
 
@@ -75,7 +75,7 @@ export function init(){
             function (status) {
                 if (status.hasPermission) {
                     //setupFCM();
-                    setupAndroidNotificationChannel();
+                    setupAndroidNotificationChannels();
                 } else {
                     requestNotificationPermission(permissions);
                 }
@@ -161,10 +161,10 @@ function subscribeTopic(topic){
 function unsubscribeTopic(topic){
     FirebasePlugin.unsubscribe(topic,
 		function () {
-			console.log("Unubscribed");
+			console.log("Unsubscribed");
 		},
 		function (error) {
-			console.error("Unubscribe error:", error);
+			console.error("Unsubscribe error:", error);
 		}
 	);
 }
