@@ -40,4 +40,25 @@ export async function login(email, password, server_url) {
   }
 }
 
-export default {login};
+export async function getLoginStatus(loginKey, server_url){
+  const response = await fetch(`https://${server_url}/api/auth/getLoginStatus`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${loginKey}`
+    }
+  });
+
+  if (data.status != "success") {
+    return {
+      success: false,
+      reason: data.content
+    };
+  }
+  return {
+    success: true,
+    content: data.content
+  };
+}
+
+export default {login, getLoginStatus};
