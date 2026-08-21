@@ -277,8 +277,18 @@ async function onDeviceReady(){
     map = await mapInit("mapid");
 	map2 = await mapInit("map_report")
 
-	ui.initSwitchPage(map, map2)
-
+	/*----------UI動作----------*/
+	ui.initSwitchPage()
+	ui.onSwitchPage("page1", () => {
+		setTimeout(() => {
+            map.invalidateSize();
+            map2.invalidateSize();
+        }, 100);
+	})
+	ui.onSwitchPage("settingPage", async () => {
+		const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
+		console.log(loginStatus)
+	})
 	ui.startClock()
 
 	/*----------主要功能處理----------*/

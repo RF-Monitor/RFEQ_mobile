@@ -4,23 +4,29 @@ import setting from "./setting.js";
 
 const server_url = "rptes.com";
 /*----------切頁----------*/
-export function initSwitchPage(map, map2){
+const onSwitchPageFunc = {}
+
+export function initSwitchPage(){
     const pages = ["page1", "page2", "settingPage"];
 
     document.querySelectorAll(".navitem").forEach(item => {
         item.addEventListener("click", () => {
             const show = item.dataset.target;
-
+            let pageName = "";
             pages.forEach(p => {
                 document.getElementById(p).style.display = (p === show) ? "block" : "none";
+                if(p === show){
+                    pageName = p;
+                }
             });
-
+            onSwitchPageFunc[pageName]?.()
+            /*
             if (show === "page1") {
                 setTimeout(() => {
                     map.invalidateSize();
                     map2.invalidateSize();
                 }, 100);
-            }
+            }*/
         });
     });
 
@@ -29,6 +35,9 @@ export function initSwitchPage(map, map2){
     document.getElementById("page1").style.display = "block";
 }
 
+export function onSwitchPage(page, f){
+    onSwitchPageFunc[page] = f;
+}
 export function showReport(){
     document.getElementById("reportPage").style.display = "block";
 }
@@ -394,6 +403,7 @@ class MyRFsensorList{
 
 export default {
     initSwitchPage,
+    onSwitchPage,
     login,
     loggingin,
     logout,
