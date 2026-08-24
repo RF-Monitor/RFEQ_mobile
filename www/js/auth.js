@@ -48,7 +48,7 @@ export async function getLoginStatus(loginKey, server_url){
       "Authorization": `Bearer ${loginKey}`
     }
   });
-
+  const data = await response.json();
   if (data.status != "success") {
     return {
       success: false,
