@@ -223,50 +223,52 @@ async function onDeviceReady(){
 	settingsInit();
 
 	/*----------firebase----------*/
+	if(window.cordova){
+		firebase.init();
+		
+		if(setting.get("tw_eew")){
+			firebase.subscribeTopic("tw_eew")
+		}else{
+			firebase.unsubscribeTopic("tw_eew");
+		}
+		
+		if(setting.get("jp_eew")){
+			firebase.subscribeTopic("jp_eew")
+		}else{
+			firebase.unsubscribeTopic("jp_eew");
+		}
+		if(setting.get("report")){
+			firebase.subscribeTopic("report")
+		}else{
+			firebase.unsubscribeTopic("report");
+		}
+		if(setting.get("pga")){
+			firebase.subscribeTopic("pga")
+		}else{
+			firebase.unsubscribeTopic("pga");
+		}
+		
+		//監聽設定
+		setting.subscribe("tw_eew", (c) => {
+			if(c) firebase.subscribeTopic("tw_eew");
+			else firebase.unsubscribeTopic("tw_eew");
+		})
+		
+		setting.subscribe("jp_eew", (c) => {
+			if(c) firebase.subscribeTopic("jp_eew");
+			else firebase.unsubscribeTopic("jp_eew");
+		})
+		setting.subscribe("report", (c) => {
+			if(c) firebase.subscribeTopic("report");
+			else firebase.unsubscribeTopic("report");
+		})
+		setting.subscribe("pga", (c) => {
+			if(c) firebase.subscribeTopic("pga");
+			else firebase.unsubscribeTopic("pga");
+		})
+	}
+	
 
-	firebase.init();
-	
-	if(setting.get("tw_eew")){
-		firebase.subscribeTopic("tw_eew")
-	}else{
-		firebase.unsubscribeTopic("tw_eew");
-	}
-	
-	if(setting.get("jp_eew")){
-		firebase.subscribeTopic("jp_eew")
-	}else{
-		firebase.unsubscribeTopic("jp_eew");
-	}
-	if(setting.get("report")){
-		firebase.subscribeTopic("report")
-	}else{
-		firebase.unsubscribeTopic("report");
-	}
-	if(setting.get("pga")){
-		firebase.subscribeTopic("pga")
-	}else{
-		firebase.unsubscribeTopic("pga");
-	}
-	
-	//監聽設定
-	setting.subscribe("tw_eew", (c) => {
-		if(c) firebase.subscribeTopic("tw_eew");
-		else firebase.unsubscribeTopic("tw_eew");
-	})
-	
-	setting.subscribe("jp_eew", (c) => {
-		if(c) firebase.subscribeTopic("jp_eew");
-		else firebase.unsubscribeTopic("jp_eew");
-	})
-	setting.subscribe("report", (c) => {
-		if(c) firebase.subscribeTopic("report");
-		else firebase.unsubscribeTopic("report");
-	})
-	setting.subscribe("pga", (c) => {
-		if(c) firebase.subscribeTopic("pga");
-		else firebase.unsubscribeTopic("pga");
-	})
-	
 	/*----------地圖相關----------*/
 	//地理資料
 	town_ID_list = await loadTownId();
@@ -287,6 +289,7 @@ async function onDeviceReady(){
 	})
 	ui.onSwitchPage("settingPage", async () => {
 		const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
+		ui.renderLoginStatus(loginStatus.content)
 		console.log(loginStatus)
 	})
 	ui.startClock()

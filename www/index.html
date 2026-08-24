@@ -478,6 +478,36 @@
         }
 
         /*----------設定頁----------*/
+        .status-box {
+            box-sizing: border-box;
+            margin-bottom: 12px;
+            padding: 16px 18px;
+            min-height: 96px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #f5f7fa;
+            border: 1px solid #dfe3e8;
+            border-left: 4px solid #315fc4;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .status-label {
+            margin-bottom: 8px;
+            color: #667085;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .status-value {
+            color: #1f2937;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
         .checkbox_label {
             display: inline-flex;
             align-items: center;
@@ -550,6 +580,18 @@
 
             .sensor_trigger_empty {
                 color: #bbbbbb;
+            }
+            .status-box {
+                background-color: #2b2b2b;
+                border-color: #484848;
+                border-left-color: #7da2ff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+            }
+            .status-label {
+                color: #b8bec9;
+            }
+            .status-value {
+                color: #f3f4f6;
             }
         }
     </style>
@@ -788,6 +830,27 @@
             </div>
             <div id="user" style="display: none;">
                 <p>歡迎 <span id="login_user"></span></p>
+                <div class="status-box">
+                    <div>
+                        <div class="status-label">帳戶驗證狀態</div>
+                        <div id="verified" class="status-value">載入中</div>
+                    </div>
+                </div>
+
+                <div class="status-box">
+                    <div>
+                        <div class="status-label">帳戶類型</div>
+                        <div id="accountType" class="status-value">載入中</div>
+                    </div>
+
+                </div>
+
+                <div class="status-box">
+                    <div>
+                        <div class="status-label">PLUS 進階功能資格</div>
+                        <div id="PLUS" class="status-value">載入中</div>
+                    </div>
+                </div>
                 <button id="logout_btn" class="login_btn">登出</button>
             </div>
             <hr/>

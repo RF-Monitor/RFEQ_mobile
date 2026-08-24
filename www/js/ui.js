@@ -183,6 +183,17 @@ export function showServerStatus(status){
 
 }
 
+export function renderLoginStatus(loginStatus){
+    document.getElementById("verified").textContent =
+        loginStatus.verified ? "已驗證" : "尚未驗證";
+
+    document.getElementById("accountType").textContent =
+        loginStatus.isAdvanced ? "進階帳戶" : "一般帳戶";
+
+    document.getElementById("PLUS").textContent =
+        loginStatus.isAdvanced ? "有效" : "未啟用";
+}
+
 class MyRFsensor{
     constructor(sensor){
         this.sensor = sensor;
@@ -410,6 +421,7 @@ export default {
     startClock,
     showServerStatus,
     showReport,
+    renderLoginStatus,
     MyRFsensor,
     MyRFsensorList
 }
