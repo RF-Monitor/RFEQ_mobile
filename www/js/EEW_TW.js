@@ -377,7 +377,7 @@ class EEWTWUI {
                                     </div>
                                     <div class="eew_details">
                                         <h1 style="margin-bottom: 0;">${alert.center.cname} 地震</h1>
-                                        <p>2025-11-21 20:11:50</p>
+                                        <p>${formatTimestamp(alert.time)}</p>
                                         <div style="display: flex;flex-wrap: nowrap;">
                                             <div style="width: 50%;">
                                                 <h1 align="left" style="margin-top: 10px;">M${alert.scale.toFixed(1)}</h1>
@@ -426,7 +426,7 @@ class EEWTWUI {
                                     </div>
                                     <div class="eew_details">
                                         <h1 style="margin-bottom: 0;">${alert.center.cname} 地震</h1>
-                                        <p>2025-11-21 20:11:50</p>
+                                        <p>${formatTimestamp(alert.time)}</p>
                                         <div style="display: flex;flex-wrap: nowrap;">
                                             <div style="width: 50%;">
                                                 <h1 align="left" style="margin-top: 10px;">M${alert.scale.toFixed(1)}</h1>
