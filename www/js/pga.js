@@ -172,16 +172,16 @@ class Station {
         let iconUrl;
         let size = 10;
         if(!this.isOnline){
-            iconUrl = 'img/shindo_icon/disconnected.png';
+            iconUrl = '/img/shindo_icon/disconnected.png';
             size = 7;
         }else{
             if (this.shindo == '0' || !this.shakealert) {
-                if (this.pga <= 1) iconUrl = 'img/shindo_icon/pga0.png';
-                else if (this.pga <= 1.3) iconUrl = 'img/shindo_icon/pga1.png';
-                else if (this.pga <= 1.4) iconUrl = 'img/shindo_icon/pga2.png';
-                else iconUrl = 'img/shindo_icon/pga3.png';
+                if (this.pga <= 1) iconUrl = '/img/shindo_icon/pga0.png';
+                else if (this.pga <= 1.3) iconUrl = '/img/shindo_icon/pga1.png';
+                else if (this.pga <= 1.4) iconUrl = '/img/shindo_icon/pga2.png';
+                else iconUrl = '/img/shindo_icon/pga3.png';
             } else {
-                iconUrl = 'img/shindo_icon/' + this.shindo + '.png';
+                iconUrl = '/img/shindo_icon/' + this.shindo + '.png';
                 size = 20; // 震度 icon 比較大
             }
         }
