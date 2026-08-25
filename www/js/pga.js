@@ -152,7 +152,7 @@ class Station {
 
         //circle
         let circleRadius = 0;
-        if(this.shakealert && shindo != '0' && enable_warningArea !='false' && flash){
+        if(this.shakealert && this.shindo != '0' && flash){
 			circleRadius = 20000;
 		}else{
             circleRadius = 0;
