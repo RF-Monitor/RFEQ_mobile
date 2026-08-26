@@ -1,7 +1,7 @@
 const defaultSettings = {
-    tw_eew: true,
+    eew_tw: true,
     RFPLUS: true,
-    jp_eew: false,
+    eew_jp: false,
     report: true,
     pga: true
 };

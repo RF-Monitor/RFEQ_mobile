@@ -153,22 +153,22 @@ async function mapInit(mapid){
 
 function settingsInit(){
 	/*----------設定頁面----------*/
-	document.getElementById("tw_eew").checked = setting.get("tw_eew");
+	document.getElementById("eew_tw").checked = setting.get("eew_tw");
 	document.getElementById("RFPLUS").checked = setting.get("RFPLUS");
-	document.getElementById("jp_eew").checked = setting.get("jp_eew");
+	document.getElementById("eew_jp").checked = setting.get("eew_jp");
 	document.getElementById("report").checked = setting.get("report");
 	document.getElementById("pga").checked = setting.get("pga");
 
-	document.getElementById("tw_eew").addEventListener("change",(e) => {
-    	setting.set("tw_eew", e.target.checked);
+	document.getElementById("eew_tw").addEventListener("change",(e) => {
+    	setting.set("eew_tw", e.target.checked);
 	})
 
 	document.getElementById("RFPLUS").addEventListener("change",(e) => {
     	setting.set("RFPLUS", e.target.checked);
 	})
 
-	document.getElementById("jp_eew").addEventListener("change",(e) => {
-    	setting.set("jp_eew", e.target.checked);
+	document.getElementById("eew_jp").addEventListener("change",(e) => {
+    	setting.set("eew_jp", e.target.checked);
 	})
 	document.getElementById("report").addEventListener("change",(e) => {
     	setting.set("report", e.target.checked);
@@ -226,16 +226,16 @@ async function onDeviceReady(){
 	if(window.cordova){
 		firebase.init();
 		
-		if(setting.get("tw_eew")){
-			firebase.subscribeTopic("tw_eew")
+		if(setting.get("eew_tw")){
+			firebase.subscribeTopic("eew_tw")
 		}else{
-			firebase.unsubscribeTopic("tw_eew");
+			firebase.unsubscribeTopic("eew_tw");
 		}
 		
-		if(setting.get("jp_eew")){
-			firebase.subscribeTopic("jp_eew")
+		if(setting.get("eew_jp")){
+			firebase.subscribeTopic("eew_jp")
 		}else{
-			firebase.unsubscribeTopic("jp_eew");
+			firebase.unsubscribeTopic("eew_jp");
 		}
 		if(setting.get("report")){
 			firebase.subscribeTopic("report")
@@ -249,14 +249,14 @@ async function onDeviceReady(){
 		}
 		
 		//監聽設定
-		setting.subscribe("tw_eew", (c) => {
-			if(c) firebase.subscribeTopic("tw_eew");
-			else firebase.unsubscribeTopic("tw_eew");
+		setting.subscribe("eew_tw", (c) => {
+			if(c) firebase.subscribeTopic("eew_tw");
+			else firebase.unsubscribeTopic("eew_tw");
 		})
 		
-		setting.subscribe("jp_eew", (c) => {
-			if(c) firebase.subscribeTopic("jp_eew");
-			else firebase.unsubscribeTopic("jp_eew");
+		setting.subscribe("eew_jp", (c) => {
+			if(c) firebase.subscribeTopic("eew_jp");
+			else firebase.unsubscribeTopic("eew_jp");
 		})
 		setting.subscribe("report", (c) => {
 			if(c) firebase.subscribeTopic("report");
