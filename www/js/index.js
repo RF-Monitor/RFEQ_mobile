@@ -48,6 +48,14 @@ async function loadCityLines() {
         return null;
     }
 }
+async function loadGlobalLines(){
+	try {
+        const res = await fetch("geojson/countries.geojson");
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
 async function loadCountyGeoJson() {
     const country_list = [
         "基隆市","臺北市","新北市","桃園市","新竹縣","新竹市",
@@ -84,17 +92,20 @@ async function loadTownId() {
 }
 
 async function mapInit(mapid){
-    const map = L.map(mapid, {zoomSnap: 0.25, zoomDelta: 0.25, zoomControl:false}).setView([22.7, 120.924610], 7.5);
+    const map = L.map(mapid, {minZoom: 3, maxZoom: 16, zoomSnap: 0.25, zoomDelta: 0.25, zoomControl:false})
+	.setView([22.7, 120.924610], 7.5);
 
+	/*
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { 
         minZoom: 3, 
         maxZoom: 16 }
     ).addTo(map);
+	*/
 
     //----------geoJson----------//
     //縣市界
     const countylines = await loadCountyLines();
-    console.log(countylines)
+	const globalLines = await loadGlobalLines();
 
     //----------panes----------//
 	map.createPane("RFPLUS_shindo_list_layer");
@@ -144,7 +155,20 @@ async function mapInit(mapid){
 	
 
     //----------layerGroups----------//
-	L.layerGroup([L.geoJSON(countylines, { color: "#D0D0D0", weight: 1 ,pane:"countyline"})]).addTo(map);
+	L.layerGroup([
+		L.geoJSON(countylines, { color: "#D0D0D0", weight: 1 ,pane:"countyline"}),
+		L.geoJSON(globalLines, {
+				filter: function (feature) {
+					return feature.properties.name !== 'Taiwan';
+				},
+                style: {
+                    color: '#808080',
+                    weight: 0.5,
+                    opacity: 0.8,
+                    fillColor: '#252525',
+                    fillOpacity: 0
+                }
+        })]).addTo(map);
 	//countyline2 = L.layerGroup([L.geoJSON(r, { color: "#D0D0D0", weight: 1 })]).addTo(map2);
 	//countyline3 = L.layerGroup([L.geoJSON(r, { color: "#D0D0D0", weight: 1 })]).addTo(map3);
 
