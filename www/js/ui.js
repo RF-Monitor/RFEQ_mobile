@@ -321,6 +321,9 @@ class MyRFsensorList{
     add(sensor){
         this.list.push(sensor)
     }
+    clear(){
+        this.list = [];
+    }
     render(onSelect = () => {}) {
         this.container.innerHTML = "";
 
