@@ -311,6 +311,38 @@ async function onDeviceReady(){
             map2.invalidateSize();
         }, 100);
 	})
+	ui.onSwitchPage("page2", async () => {
+		if(setting.get("loginKey")){
+			try{
+				myRFsensorList.clear();
+				const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
+				const data = await websocketManager.getLatestPGA();
+				const sensors = await Promise.all(
+					RFsensorList.map(async (sensor) => {
+						const id = sensor.id;
+
+						sensor.data = data.data.find((station) => {
+							return station.id == id;
+						});
+						sensor.triggerList = await myRFsensorHandler.getRFsensorTriggerList(server_url, id);
+
+						return sensor;
+					})
+				);
+
+				sensors.sort((a, b) => {
+					return String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+				});
+
+				myRFsensorList.list = sensors;
+				myRFsensorList.render(onSensorSelect);
+			}catch(err){
+				console.error(err);
+			}
+		}else{
+			myRFsensorList.renderNotLoggedIn();
+		}
+	})
 	ui.onSwitchPage("settingPage", async () => {
 		const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
 		ui.renderLoginStatus(loginStatus.content)
@@ -375,28 +407,7 @@ async function onDeviceReady(){
 		});
 		myRFsensor.render();
 	}
-	if(setting.get("loginKey")){
-		try{
-			const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
-			const data = await websocketManager.getLatestPGA();
-			await Promise.all(
-				RFsensorList.map(async (sensor) => {
-					const id = sensor.id;
-					sensor.data = data.data.find((station) => {
-						return station.id == id
-					});
-					sensor.triggerList = await myRFsensorHandler.getRFsensorTriggerList(server_url, id);
-					myRFsensorList.add(sensor);
-				})
-			);
-
-			myRFsensorList.render(onSensorSelect);
-		}catch(err){
-			console.error(err);
-		}
-	}else{
-		myRFsensorList.renderNotLoggedIn();
-	}
+	
 
     /*EEW.handleAlert(24.8,121.0,alert);*/
 }
