@@ -17,6 +17,7 @@
     "cordova-android": "^14.0.1",
     "cordova-plugin-android-permissions": "^1.1.5",
     "cordova-plugin-firebasex": "^19.0.1",
+    "cordova-plugin-inappbrowser": "^7.0.0",
     "cordova-plugin-purchase": "^13.17.2"
   },
   "cordova": {
@@ -27,7 +28,8 @@
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-firebasex": {},
       "com.rptes.publicdownload": {},
-      "cordova-plugin-purchase": {}
+      "cordova-plugin-purchase": {},
+      "cordova-plugin-inappbrowser": {}
     }
   }
 }
