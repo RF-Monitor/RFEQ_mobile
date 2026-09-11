@@ -131,6 +131,10 @@ export function logout(){
     document.getElementById("waiting").style.display = "none";
 }
 
+document.getElementById("newSensor").addEventListener("click", function () {
+    cordova.InAppBrowser.open("https://rptes.com/RFEQservice/aboutRFsensor.html#plans", "_blank", "location=yes");
+});
+
 export function startClock(){
     setInterval(() => {
         var myDate = new Date((Date.now()));
