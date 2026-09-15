@@ -1,5 +1,6 @@
 const defaultSettings = {
     eew_tw: true,
+    eew_test: false,
     RFPLUS: true,
     eew_jp: false,
     report: true,

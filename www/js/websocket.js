@@ -2,6 +2,7 @@
 //import { reportManager } from "./reports.js";
 //import { EEWTWManager } from "./EEW_TW.js";
 import { timestampNow } from "./time.js";
+import setting from "./setting.js";
 let EEWManager = null
 let reportManager = null;
 let stationManager = null;
@@ -59,7 +60,15 @@ export function ws_connect(){
 			data = JSON.parse(data);
 			
 			//臺灣速報
-			if(data["type"] == "eew_tw"){
+			if(data["type"] == "eew_tw" && setting.get("eew_tw")){
+				console.log(data["content"]);
+				if(timestampNow(0) - data.content.time < 180000){
+					EEWManager.handleAlert(location.lat, location.lon, data.content);
+				}
+			}
+
+			//臺灣速報演習
+			if(data["type"] == "eew_test" && setting.get("eew_test")){
 				console.log(data["content"]);
 				if(timestampNow(0) - data.content.time < 180000){
 					EEWManager.handleAlert(location.lat, location.lon, data.content);
