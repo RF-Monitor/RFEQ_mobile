@@ -266,6 +266,97 @@
             color: #222;
             background: #f2f2f2;
         }
+
+        .subscribe-plus-btn {
+            width: 100%;
+            margin: 4px 0 14px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #315fe9, #744ee8);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .subscribe-plus-btn[data-mode="manage"] {
+            background: #e9edf5;
+            color: #27344d;
+        }
+
+        .subscribe-plus-btn:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
+
+        .subscription-dialog {
+            box-sizing: border-box;
+            width: min(420px, calc(100% - 32px));
+            padding: 0;
+            border: 0;
+            border-radius: 14px;
+            color: #1f2937;
+            background: #ffffff;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+        }
+
+        .subscription-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.58);
+        }
+
+        .subscription-dialog-content {
+            padding: 22px;
+        }
+
+        .subscription-dialog h2 {
+            margin: 0 0 8px;
+        }
+
+        .subscription-period {
+            margin: 0 0 16px;
+            color: #315fc4;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .subscription-features {
+            margin: 0 0 18px;
+            padding-left: 22px;
+            line-height: 1.8;
+        }
+
+        .subscription-note {
+            margin-bottom: 18px;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .subscription-dialog-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .subscription-dialog-actions button {
+            flex: 1;
+            padding: 11px 14px;
+            border: 0;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .subscription-confirm-btn {
+            color: #ffffff;
+            background: #315fe9;
+            font-weight: 700;
+        }
+
+        .subscription-cancel-btn {
+            color: #27344d;
+            background: #e9edf5;
+        }
         .sensor{
             width: calc(100% - 10px);
             height: fit-content;
@@ -603,6 +694,21 @@
             .status-value {
                 color: #f3f4f6;
             }
+            .subscribe-plus-btn[data-mode="manage"] {
+                background: #3a414e;
+                color: #f3f4f6;
+            }
+            .subscription-dialog {
+                color: #f3f4f6;
+                background: #252525;
+            }
+            .subscription-note {
+                color: #b8bec9;
+            }
+            .subscription-cancel-btn {
+                color: #f3f4f6;
+                background: #3a414e;
+            }
         }
     </style>
     <body style="font-family: 微軟正黑體;color: black;">
@@ -861,6 +967,7 @@
                         <div id="PLUS" class="status-value">載入中</div>
                     </div>
                 </div>
+                <button id="subscribePLUS" class="subscribe-plus-btn" type="button">訂閱 RFEQ PLUS</button>
                 <button id="logout_btn" class="login_btn">登出</button>
             </div>
             <hr/>
@@ -893,6 +1000,22 @@
             <div class="navitem" data-target="page2"><h4 style="text-align: center;">我的測站</h4></div>
             <div class="navitem" data-target="settingPage"><h4 style="text-align: center;">設定</h4></div>
         </div>
+        <dialog id="subscriptionDialog" class="subscription-dialog">
+            <div class="subscription-dialog-content">
+                <h2>訂閱 RFEQ PLUS</h2>
+                <p class="subscription-period">訂閱期間：每月</p>
+                <ul class="subscription-features">
+                    <li>使用 RFEQ RFPLUS 進階參與式地震速報</li>
+                    <li>更高的 API 使用額度(For 開發者)</li>
+                </ul>
+                <p class="subscription-note">訂閱後將綁定您的RFEQ帳號，於RFEQ電腦版登入帳號也可以接收進階預警。</p>
+                <p class="subscription-note">訂閱將按月自動續訂，實際價格會在 Google Play 購買畫面顯示。你可以隨時透過 Google Play 管理或取消訂閱。</p>
+                <div class="subscription-dialog-actions">
+                    <button id="cancelSubscription" class="subscription-cancel-btn" type="button">暫時不要</button>
+                    <button id="confirmSubscription" class="subscription-confirm-btn" type="button">前往訂閱</button>
+                </div>
+            </div>
+        </dialog>
         <script src="cordova.js"></script>
         <!--<script src="js/ui.js"></script>-->
         <!--<script type="module" src="js/websocket.js"></script>-->
