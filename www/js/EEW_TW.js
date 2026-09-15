@@ -368,7 +368,7 @@ class EEWTWUI {
                                 </div>
                                 -->
                                 <div class="eew_title">
-                                    <h3 style="margin-bottom: 0;">緊急地震速報(台灣CWA)</h3>
+                                    <h3 style="margin-bottom: 0;">緊急地震速報(台灣CWA)${reportNumText}</h3>
                                 </div>
                                 <div class="eew_content">
                                     <div class="eew_maxShindo">
