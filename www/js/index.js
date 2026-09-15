@@ -219,6 +219,9 @@ function settingsInit(){
 		document.getElementById("login_btn").disabled = false;
 		document.getElementById("login_btn").innerText = "登入";
 	})
+	document.getElementById("register_btn").addEventListener("click",async () => {
+		cordova.InAppBrowser.open("https://rptes.com/RFEQservice/register.html", "_blank", "location=yes");
+	})
 	document.getElementById("logout_btn").addEventListener("click",async () => {
 		setting.set("loginUser", "");
 		setting.set("loginKey", "");
