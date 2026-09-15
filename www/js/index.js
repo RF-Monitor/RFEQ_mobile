@@ -8,6 +8,7 @@ import setting from "./setting.js";
 import auth from "./auth.js";
 import myRFsensorHandler from "./myRFsensor.js";
 import ui from "./ui.js";
+import { initializePurchase } from "./purchase.js";
 
 const server_url = "rptes.com";
 
@@ -291,7 +292,13 @@ async function onDeviceReady(){
 			else firebase.unsubscribeTopic("pga");
 		})
 	}
-	
+
+	/*----------購買系統----------*/
+	if(window.cordova){
+		if(window.cordova.platformId == "android"){
+			initializePurchase();
+		}
+	}
 
 	/*----------地圖相關----------*/
 	//地理資料
