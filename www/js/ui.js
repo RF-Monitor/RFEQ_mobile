@@ -1,6 +1,7 @@
 import { timestampNow, formatTimestamp } from "./time.js";
 import myRFsensor from "./myRFsensor.js";
 import setting from "./setting.js";
+//import { purchaseSubscription } from "./purchase.js";
 
 const server_url = "rptes.com";
 /*----------切頁----------*/
@@ -134,6 +135,24 @@ export function logout(){
 document.getElementById("newSensor").addEventListener("click", function () {
     cordova.InAppBrowser.open("https://rptes.com/RFEQservice/aboutRFsensor.html#plans", "_blank", "location=yes");
 });
+
+const subscribeButton = document.getElementById("subscribePLUS");
+const subscriptionDialog = document.getElementById("subscriptionDialog");
+const cancelSubscription = document.getElementById("cancelSubscription");
+const confirmSubscription = document.getElementById("confirmSubscription");
+subscribeButton.addEventListener("click", () => {
+    subscriptionDialog.showModal();
+});
+
+cancelSubscription.addEventListener("click", () => {
+    subscriptionDialog.close();
+});
+
+confirmSubscription.addEventListener("click", () => {
+    // 在這裡執行 Google Play 訂閱購買
+});
+
+
 
 export function startClock(){
     setInterval(() => {
