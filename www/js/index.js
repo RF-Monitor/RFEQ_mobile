@@ -9,7 +9,7 @@ import auth from "./auth.js";
 import myRFsensorHandler from "./myRFsensor.js";
 import ui from "./ui.js";
 import { initializePurchase } from "./purchase.js";
-
+import { syncNTP } from "./time.js";
 const server_url = "rptes.com";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -248,6 +248,9 @@ async function onDeviceReady(){
             "max": 5,
             "alert":true
         }
+	syncNTP().catch(err => {
+		console.error("NTP同步失敗:", err);
+	})
 	settingsInit();
 
 	/*----------firebase----------*/

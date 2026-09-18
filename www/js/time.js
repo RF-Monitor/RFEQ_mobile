@@ -1,5 +1,18 @@
-export function timestampNow(ntpoffset_){
-	return (Date.now()) + ntpoffset_;
+let offset = 0;
+
+export async function syncNTP(){
+  const res = await fetch("https://rptes.com/ntp");
+  const data = await res.json();
+  if (!data?.unixtime) throw new Error('Invalid NTP response');
+
+  const serverTime = data.unixtime * 1000;
+  offset = serverTime - Date.now();
+
+  console.log('[NTP] offset =', offset);
+}
+
+export function timestampNow(a){
+	return (Date.now()) + offset;
 }
 
 export function formatTimestamp(timestamp) {
