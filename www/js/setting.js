@@ -4,7 +4,8 @@ const defaultSettings = {
     RFPLUS: true,
     eew_jp: false,
     report: true,
-    pga: true
+    pga: true,
+    agreePolicy: false
 };
 
 let subscribers = {}; // { key: [callback] }

@@ -39,12 +39,16 @@ export function initSwitchPage(){
 export function onSwitchPage(page, f){
     onSwitchPageFunc[page] = f;
 }
+export function showPolicy(callback){
+    document.getElementById("rules").style.display = "flex";
+    document.getElementById("rules_agree_btn").addEventListener("click", () => {
+        document.getElementById("rules").style.display = "none";
+        if (callback) callback();
+    })
+}
 export function showReport(){
     document.getElementById("reportPage").style.display = "block";
 }
-document.getElementById("report_return").addEventListener("click", () => {
-    document.getElementById("reportPage").style.display = "none";
-})
 
 /*----------資訊抽屜開合----------*/
 const sheet = document.querySelector('.nav_main');
@@ -132,8 +136,20 @@ export function logout(){
     document.getElementById("waiting").style.display = "none";
 }
 
+/*----------buttons----------*/
+document.getElementById("report_return").addEventListener("click", () => {
+    document.getElementById("reportPage").style.display = "none";
+})
+
+/*----------外部資源----------*/
 document.getElementById("newSensor").addEventListener("click", function () {
     cordova.InAppBrowser.open("https://rptes.com/RFEQservice/aboutRFsensor.html#plans", "_blank", "location=yes");
+});
+document.getElementById("policy_link").addEventListener("click", function () {
+    cordova.InAppBrowser.open("https://rptes.com/policy.html", "_blank", "location=yes");
+});
+document.getElementById("privacy_policy_link").addEventListener("click", function () {
+    cordova.InAppBrowser.open("https://rptes.com/privacyPolicy.html", "_blank", "location=yes");
 });
 
 const subscribeButton = document.getElementById("subscribePLUS");
@@ -447,6 +463,7 @@ export default {
     startClock,
     showServerStatus,
     showReport,
+    showPolicy,
     renderLoginStatus,
     MyRFsensor,
     MyRFsensorList

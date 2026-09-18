@@ -252,6 +252,12 @@ async function onDeviceReady(){
 		console.error("NTP同步失敗:", err);
 	})
 	settingsInit();
+	if(!setting.get("agreePolicy")){
+		ui.showPolicy(() => {
+			setting.set("agreePolicy", true);
+		})
+	}
+	
 
 	/*----------firebase----------*/
 	if(window.cordova){
@@ -420,8 +426,8 @@ async function onDeviceReady(){
 		});
 		myRFsensor.render();
 	}
-	
 
+	
     /*EEW.handleAlert(24.8,121.0,alert);*/
 }
 
