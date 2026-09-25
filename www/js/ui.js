@@ -1,7 +1,7 @@
 import { timestampNow, formatTimestamp } from "./time.js";
 import myRFsensor from "./myRFsensor.js";
 import setting from "./setting.js";
-//import { purchaseSubscription } from "./purchase.js";
+import { purchaseSubscription } from "./purchase.js";
 
 const server_url = "rptes.com";
 /*----------切頁----------*/
@@ -139,6 +139,9 @@ export function logout(){
 /*----------buttons----------*/
 document.getElementById("report_return").addEventListener("click", () => {
     document.getElementById("reportPage").style.display = "none";
+})
+document.getElementById("confirmSubscription").addEventListener("click", () => {
+    purchaseSubscription();
 })
 
 /*----------外部資源----------*/
