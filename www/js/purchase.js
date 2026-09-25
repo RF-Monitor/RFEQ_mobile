@@ -54,7 +54,7 @@ export function initializePurchase() {
         }
     });
 
-    store.initialize([Platform.GOOGLE_PLAY]);
+    return store.initialize([Platform.GOOGLE_PLAY]);
 }
 
 export async function purchaseSubscription() {
