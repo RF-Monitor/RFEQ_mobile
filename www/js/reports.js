@@ -31,10 +31,15 @@ class reportManager{
     }
 
     addReport(msg){
-        this.list.push(new report(msg));
+        const newReport = new report(msg);
+        if( this.list[0].id != newReport.id ){
+            this.list.unshift(newReport);
+        }
+        
         if(this.list.length >= 30){
             this.removeEarliestReport();
         }
+
         this.UI.update(this.list, {
             onClick: (report) => {
                 this.onClickCallback(report)
