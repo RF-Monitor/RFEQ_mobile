@@ -1,4 +1,4 @@
-const SUBSCRIPTION_ID = "rfeq_premium";
+const SUBSCRIPTION_ID = "rfeq_rfplus";
 let subscriptionProduct = null;
 
 const events = {
@@ -16,6 +16,24 @@ export function initializePurchase() {
         type: ProductType.PAID_SUBSCRIPTION,
         platform: Platform.GOOGLE_PLAY
     });
+
+    store.validator = (receipt, callback) => {
+        fetch("https://rptes.com/api/billing/RFEQ/google/validate", {
+            method: "POST",
+            credentials: "include",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(receipt)
+        })
+        .then(async response => {
+            if (!response.ok) throw new Error(`驗證 API 回傳 ${response.status}`);
+            return response.json();
+        })
+        .then(callback)
+        .catch(error => {
+            console.error("無法連接訂閱驗證服務", error);
+            callback({ok: false, code: 6777010, message: "暫時無法驗證訂閱"});
+        });
+    };
 
     store.when()
         .productUpdated(product => {
@@ -37,7 +55,7 @@ export function initializePurchase() {
         .verified(receipt => {
             receipt.finish();
             //document.getElementById("subscription-status").textContent = "訂閱驗證成功";
-            refreshMemberStatus();
+            //refreshMemberStatus();
         })
         .unverified(receipt => {
             console.error("訂閱驗證失敗", receipt);
