@@ -372,11 +372,11 @@ class EEWTWUI {
                                 </div>
                                 <div class="eew_content">
                                     <div class="eew_maxShindo">
-                                        <h3 align="center" style="margin: 0;">最大震度</h3>
+                                        <h4 align="center" style="margin: 0;">最大震度</h4>
                                         <img src="img/shindo/${alert.max_shindo}.png" style="width:100%;">
                                     </div>
                                     <div class="eew_details">
-                                        <h1 style="margin-bottom: 0;">${alert.center.cname} 地震</h1>
+                                        <h1 style="margin-bottom: 0;">${alert.center.cname}</h1>
                                         <p>${formatTimestamp(alert.time)}</p>
                                         <div style="display: flex;flex-wrap: nowrap;">
                                             <div style="width: 50%;">
