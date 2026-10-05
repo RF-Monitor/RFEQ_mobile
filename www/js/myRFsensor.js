@@ -61,7 +61,17 @@ async function setRFsensor(data, username, loginKey){
     }
 
     return true
+}
 
+async function setLocalRFsensor(data, ip){
+    const res = await fetch(`http://${ip}/get?input_ssid=${data.SSID}&input_password=${data.password}&input_lat=${data.lat}&input_lon=${data.lon}`, {
+        method: "GET"
+    });
+    if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return true
 }
 
 async function resetRFsensor(id, username, loginKey){
@@ -97,6 +107,7 @@ async function downloadRFsensorWaveformImage (server, id, startTime, endTime) {
     }
     return res.blob();
 }
+
 function downloadToPublicFolder(url, filename, loginKey){
     return new Promise((resolve, reject) => {
         cordova.exec(resolve, reject, "PublicDownload", "download", [
@@ -107,12 +118,42 @@ function downloadToPublicFolder(url, filename, loginKey){
     });
 }
 
+async function searchLocalStations(){
+    const res = await fetch("http://192.168.4.1/monitorData")
+    if (!res.ok) {
+        return null;
+    }
+    const data = await res.json();
+
+    if( data.device_id ){
+        let dataConverted = {
+            id: data.device_id,
+            name: "RF-sensor",
+            ip: "192.168.4.1",
+            data: {
+                id: data.device_id,
+                name: data.sta_name,
+                lat: data.sta_lat,
+                lon: data.sta_lon,
+                SSID: data.STAssi,
+                password: data.STApasswor
+            }
+        }
+        return [
+            dataConverted
+        ];
+    }
+    return null;
+}
+
 export default {
     getMyRFsensor,
     getRFsensorData,
     getRFsensorTriggerList,
     setRFsensor,
+    setLocalRFsensor,
     resetRFsensor,
     downloadRFsensorWaveformImage,
-    downloadToPublicFolder
+    downloadToPublicFolder,
+    searchLocalStations
 }

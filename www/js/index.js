@@ -332,8 +332,19 @@ async function onDeviceReady(){
 	})
 	ui.onSwitchPage("page2", async () => {
 		if(setting.get("loginKey")){
+			myRFsensorList.clear();
+			myRFsensorList.localList = [];
+
+			// 立即開始搜尋，不等待，也先處理搜尋失敗
+			const localStationPromise = myRFsensorHandler.searchLocalStations().then(
+				stations => ({ success: true, stations }),
+				err => {
+					console.error("搜尋內網測站失敗：", err);
+					return { success: false };
+				}
+			);
+
 			try{
-				myRFsensorList.clear();
 				const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
 				const data = await websocketManager.getLatestPGA();
 				const sensors = await Promise.all(
@@ -354,14 +365,21 @@ async function onDeviceReady(){
 				});
 
 				myRFsensorList.list = sensors;
-				myRFsensorList.render(onSensorSelect);
+				myRFsensorList.render();
 			}catch(err){
-				console.error(err);
+				console.error("載入雲端測站失敗：", err);
+			}
+
+			// 雲端已顯示，等待內網搜尋結果後更新
+			const result = await localStationPromise;
+			if(result.success){
+				myRFsensorList.localList = result.stations || [];
+				myRFsensorList.render();
 			}
 		}else{
 			myRFsensorList.renderNotLoggedIn();
 		}
-	})
+	});
 	ui.onSwitchPage("settingPage", async () => {
 		const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
 		ui.renderLoginStatus(loginStatus.content)
@@ -386,7 +404,7 @@ async function onDeviceReady(){
 
 	let Station = new StationManager(map);
 
-	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("RFsensorList"))
+	const myRFsensorList = new ui.MyRFsensorList(document.getElementById("RFsensorList"));
 	myRFsensorList.renderLoading();
 
 	/*----------websocket連線----------*/
@@ -408,7 +426,7 @@ async function onDeviceReady(){
 	}
 	
 	/*----------myRFsensor----------*/
-	
+	/*
 	const onSensorSelect = (sensor) => {
 		const myRFsensor = new ui.MyRFsensor(sensor);
 		myRFsensor.show({
@@ -425,7 +443,7 @@ async function onDeviceReady(){
 			}
 		});
 		myRFsensor.render();
-	}
+	}*/
 
 	
     /*EEW.handleAlert(24.8,121.0,alert);*/

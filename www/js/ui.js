@@ -1,5 +1,5 @@
 import { timestampNow, formatTimestamp } from "./time.js";
-import myRFsensor from "./myRFsensor.js";
+import myRFsensorHandler from "./myRFsensor.js";
 import setting from "./setting.js";
 import { purchaseSubscription } from "./purchase.js";
 
@@ -239,6 +239,7 @@ export function renderLoginStatus(loginStatus){
 class MyRFsensor{
     constructor(sensor){
         this.sensor = sensor;
+        this.isLocal = !!sensor.ip;
         this.pageOverlay = document.getElementById("modalOverlay");
         this.page = document.getElementById("RFsensorPage");
         this.submitButton = document.getElementById("submit");
@@ -253,23 +254,28 @@ class MyRFsensor{
         this.nameInput = document.getElementById("sensorNameInput");
         this.latInput = document.getElementById("sensorLatInput");
         this.lonInput = document.getElementById("sensorLonInput");
+        this.SSIDInput = document.getElementById("sensorWiFiSSIDInput");
+        this.passwordInput = document.getElementById("sensorWiFiPasswordInput");
 
         this.triggerListContainer = document.getElementById("sensorTriggerRecords");
         this.triggerEmpty = document.getElementById("sensorTriggerEmpty");
     }
     show({ submit, reset } = {}){
         this.pageOverlay.style.display = "flex";
+        this.page.style.display = "block";
         this.submitButton.addEventListener("click", () => {
             const id = this.sensor.data.id;
             const name = this.nameInput.value;
             const lat = this.latInput.value;
             const lon = this.lonInput.value;
-            submit?.({id, name, lat, lon})
-        })
+            const SSID = this.SSIDInput.value;
+            const password = this.passwordInput.value;
+            submit?.({id, name, lat, lon, SSID, password});
+        });
         this.resetButton.addEventListener("click", () => {
             const id = this.sensor.data.id;
-            reset?.(id)
-        })
+            reset?.(id);
+        });
     }
     hide(){
         this.pageOverlay.style.display = "none";
@@ -279,7 +285,14 @@ class MyRFsensor{
         this.nameInput.value = this.sensor.data.name;
         this.latInput.value = this.sensor.data.lat;
         this.lonInput.value = this.sensor.data.lon;
-
+        if(this.sensor.data.SSID){
+            this.SSIDInput.value = this.sensor.data.SSID;
+            this.passwordInput.value = this.sensor.data.password;
+        }else{
+            this.SSIDInput.disabled = true;
+            this.passwordInput.disabled = true;
+        }
+        
         // triggerList
         this.triggerListContainer.innerHTML = "";
         for(const record of this.sensor.triggerList){
@@ -311,10 +324,10 @@ class MyRFsensor{
                         const token = setting.get("loginKey");
 
                         if(window.cordova){
-                            const savedPath = myRFsensor.downloadToPublicFolder(url, filename, token);
+                            const savedPath = myRFsensorHandler.downloadToPublicFolder(url, filename, token);
                             alert(`波型圖已下載至 「下載」資料夾，檔名: ${filename}`);
                         }else{
-                            const blob = await myRFsensor.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
+                            const blob = await myRFsensorHandler.downloadRFsensorWaveformImage(server_url, this.sensor.data.id, record.start_time, record.end_time);
                             const objectURL = URL.createObjectURL(blob);
                             const link = document.createElement("a");
 
@@ -359,6 +372,7 @@ class MyRFsensorList{
     constructor(container){
         this.container = container;
         this.list = [];
+        this.localList = [];
     }
     add(sensor){
         this.list.push(sensor)
@@ -369,6 +383,7 @@ class MyRFsensorList{
     render(onSelect = () => {}) {
         this.container.innerHTML = "";
 
+        // 渲染遠端測站
         this.list.forEach(sensor => {
             let status = "";
             if (!sensor.data) {
@@ -384,12 +399,6 @@ class MyRFsensorList{
             sensorDiv.id = `RFsensor_${sensor.id}`;
             sensorDiv.className = "sensor";
 
-            // 圖片
-            /*
-            const img = document.createElement("img");
-            img.src = "img/sensor.png";
-            img.style.width = "30%";
-            */
             // 文字區塊
             const textDiv = document.createElement("div");
             textDiv.className = "sensor_text";
@@ -413,11 +422,50 @@ class MyRFsensorList{
 
             //點擊後事件
             sensorDiv.addEventListener("click", () => {
-                onSelect(sensor);
+                this.onSensorSelect(sensor);
+                onSelect?.(sensor);
             })
 
             this.container.appendChild(sensorDiv);
         });
+
+        // 渲染本地測站
+        this.localList.forEach(sensor => {
+            let status = "🟩本地測站";
+            // 外層 div
+            const sensorDiv = document.createElement("div");
+            sensorDiv.id = `RFsensor_${sensor.device_id}`;
+            sensorDiv.className = "sensor";
+
+            // 文字區塊
+            const textDiv = document.createElement("div");
+            textDiv.className = "sensor_text";
+
+            const h2 = document.createElement("h2");
+            h2.textContent = "RF-sensor";
+
+            const h5_status = document.createElement("h5");
+            h5_status.textContent = status;
+
+            const h5_id = document.createElement("h5");
+            h5_id.textContent = `ID: ${sensor.device_id}`;
+
+            // 組裝
+            textDiv.appendChild(h2);
+            textDiv.appendChild(h5_status);
+            textDiv.appendChild(h5_id);
+
+            //sensorDiv.appendChild(img);
+            sensorDiv.appendChild(textDiv);
+
+            //點擊後事件
+            sensorDiv.addEventListener("click", () => {
+                this.onLocalSensorSelect(sensor);
+                onSelect?.(sensor);
+            })
+
+            this.container.appendChild(sensorDiv);
+        })
     }
     renderLoading(){
         this.container.innerHTML = "";
@@ -454,6 +502,39 @@ class MyRFsensorList{
         sensorDiv.appendChild(h5_status)
 
         this.container.appendChild(sensorDiv);
+    }
+
+    onSensorSelect(sensor){
+		const RFsensor = new MyRFsensor(sensor);
+		RFsensor.show({
+			submit:async (data) => {
+				// 套用測站設定
+				if(await myRFsensorHandler.setRFsensor(data, setting.get("loginUser"), setting.get("loginKey"))){
+					window.alert("設定成功");
+				}
+			},
+			reset:async(id) => {
+				if(await myRFsensorHandler.resetRFsensor(id, setting.get("loginUser"), setting.get("loginKey"))){
+					window.alert("已發出重設指令");
+				}
+			}
+		});
+		RFsensor.render();
+	}
+
+    onLocalSensorSelect(sensor){
+        const RFsensor = new MyRFsensor(sensor);
+		RFsensor.show({
+			submit:async (data, ip) => {
+				if(await myRFsensorHandler.setLocalRFsensor(data, ip)){
+					window.alert("設定成功");
+				}
+			},
+			reset:async(id) => {
+				window.alert("此功能暫時不開放");
+			}
+		});
+		RFsensor.render();
     }
 }
 

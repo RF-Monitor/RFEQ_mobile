@@ -1009,18 +1009,37 @@
                 <div id="RFsensorPage" class="modal">
                     <h3 id="sensorID"></h3>
                     <hr/>
-                    <label for="sensorNameInput">
-                        <p>測站名稱</p>
-                    </label>
-                    <input type="text" id="sensorNameInput">
-                    <label for="sensorLatInput">
-                        <p>緯度</p>
-                    </label>
-                    <input type="number" id="sensorLatInput">
-                    <label for="sensorLonInput">
-                        <p>經度</p>
-                    </label>
-                    <input type="number" id="sensorLonInput">
+                    <div style="margin-top: 10px;">
+                        <label for="sensorNameInput">
+                            <p>測站名稱</p>
+                        </label>
+                        <input type="text" id="sensorNameInput">
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label for="sensorLatInput">
+                            <p>緯度</p>
+                        </label>
+                        <input type="number" id="sensorLatInput">
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label for="sensorLonInput">
+                            <p>經度</p>
+                        </label>
+                        <input type="number" id="sensorLonInput">
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label for="sensorWiFiSSIDInput">
+                            <p>WiFi SSID</p>
+                        </label>
+                        <input type="text" id="sensorWiFiSSIDInput">
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label for="sensorWiFiPasswordInput">
+                            <p>WiFi 密碼</p>
+                        </label>
+                        <input type="password" id="sensorWiFiPasswordInput">
+                    </div>
+                    <p>WiFi相關設定僅限在同個區網內的測站，不可遠端控制</p>
                     <hr/>
 
                     <section class="sensor_trigger_section" aria-labelledby="sensorTriggerTitle">
