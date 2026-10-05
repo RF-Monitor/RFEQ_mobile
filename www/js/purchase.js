@@ -19,7 +19,7 @@ export function initializePurchase() {
     });
 
     store.validator = (receipt, callback) => {
-        fetch("https://test.rptes.com/api/billing/RFEQ/google/validate", {
+        fetch("https://rptes.com/api/billing/RFEQ/google/validate", {
             method: "POST",
             credentials: "omit",
             headers: {
