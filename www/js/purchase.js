@@ -1,3 +1,4 @@
+import setting from "./setting.js";
 const SUBSCRIPTION_ID = "rfeq_rfplus";
 let subscriptionProduct = null;
 
@@ -20,9 +21,11 @@ export function initializePurchase() {
     store.validator = (receipt, callback) => {
         fetch("https://test.rptes.com/api/billing/RFEQ/google/validate", {
             method: "POST",
-            Authorization: "Bearer " + setting.get("loginKey"),
             credentials: "omit",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + setting.get("loginKey")
+            },
             body: JSON.stringify(receipt)
         })
         .then(async response => {
