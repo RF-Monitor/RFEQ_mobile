@@ -20,6 +20,7 @@ export function initializePurchase() {
     store.validator = (receipt, callback) => {
         fetch("https://test.rptes.com/api/billing/RFEQ/google/validate", {
             method: "POST",
+            Authorization: "Bearer " + setting.get("loginKey"),
             credentials: "omit",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(receipt)
