@@ -212,6 +212,9 @@ function settingsInit(){
 			setting.set("loginKey", result.loginKey);
 			const result2 = await websocketManager.login(result.loginKey);
 			ui.login(result2.user);
+			const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
+			ui.renderLoginStatus(loginStatus.content)
+			console.log(loginStatus)
 		}else{
 			alert("登入失敗!請檢查帳號密碼是否正確");
 			ui.logout();
