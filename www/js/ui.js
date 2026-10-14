@@ -232,7 +232,7 @@ export function renderLoginStatus(loginStatus){
     document.getElementById("accountType").textContent =
         loginStatus.isAdvanced ? "進階帳戶" : "一般帳戶";
 
-    const subscriptionStatus = loginStatus.isAdvanced ? "有效" : "未啟用";
+    //const subscriptionStatus = loginStatus.isAdvanced ? "有效" : "未啟用";
     if(loginStatus.isAdvanced){
         if(loginStatus.expires_at == 0 && loginStatus.expires_at != null){
             document.getElementById("PLUS").textContent = "永久有效";
@@ -241,6 +241,8 @@ export function renderLoginStatus(loginStatus){
             const expireDateString = `${expireDate.getFullYear()}/${expireDate.getMonth() + 1}/${expireDate.getDate()}`;
             document.getElementById("PLUS").textContent = `有效(至 ${expireDateString})`;
         }
+    }else{
+        document.getElementById("PLUS").textContent = "未啟用";
     }
     
 }
