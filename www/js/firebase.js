@@ -97,42 +97,6 @@ export function init(){
         console.error("Token error:", error);
     });
 
-    //subscribe topic
-    /*
-    FirebasePlugin.subscribe("eew_tw",
-		function () {
-			console.log("Subscribed");
-		},
-		function (error) {
-			console.error("Subscribe error:", error);
-		}
-	);
-    FirebasePlugin.subscribe("eew_jp",
-		function () {
-			console.log("Subscribed");
-		},
-		function (error) {
-			console.error("Subscribe error:", error);
-		}
-	);
-    FirebasePlugin.subscribe("report",
-		function () {
-			console.log("Subscribed");
-		},
-		function (error) {
-			console.error("Subscribe error:", error);
-		}
-	);
-    FirebasePlugin.subscribe("pga",
-		function () {
-			console.log("Subscribed");
-		},
-		function (error) {
-			console.error("Subscribe error:", error);
-		}
-	);
-    */
-
     //onMessage
     FirebasePlugin.onMessageReceived(function(message) {
         console.log("Message received:", message);
