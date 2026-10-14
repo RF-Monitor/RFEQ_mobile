@@ -156,22 +156,30 @@ async function mapInit(mapid){
 	
 
     //----------layerGroups----------//
-	L.layerGroup([
-		L.geoJSON(countylines, { color: "#D0D0D0", weight: 1 ,pane:"countyline"}),
-		L.geoJSON(globalLines, {
-				filter: function (feature) {
-					return feature.properties.name !== 'Taiwan';
-				},
-                style: {
-                    color: '#808080',
-                    weight: 0.5,
-                    opacity: 0.8,
-                    fillColor: '#252525',
-                    fillOpacity: 0
-                }
-        })]).addTo(map);
-	//countyline2 = L.layerGroup([L.geoJSON(r, { color: "#D0D0D0", weight: 1 })]).addTo(map2);
-	//countyline3 = L.layerGroup([L.geoJSON(r, { color: "#D0D0D0", weight: 1 })]).addTo(map3);
+	const countyLayer = L.geoJSON(countylines, { color: "#D0D0D0", weight: 1 ,pane:"countyline"});
+	const globalLayer = L.geoJSON(globalLines, {
+		filter: function (feature) {
+			return feature.properties.name !== 'Taiwan';
+		},
+		style: { color: '#808080', weight: 0.5, opacity: 0.8, fillOpacity: 0 }
+	});
+	L.layerGroup([countyLayer, globalLayer]).addTo(map);
+
+	const themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+	function updateMapTheme(){
+		const isDark = themeQuery.matches;
+		countyLayer.setStyle({ color: isDark ? '#D0D0D0' : '#606873' });
+		globalLayer.setStyle({ color: isDark ? '#808080' : '#8a929c', fillColor: isDark ? '#252525' : '#f4f6f9' });
+	}
+	updateMapTheme();
+	if (themeQuery.addEventListener) themeQuery.addEventListener('change', updateMapTheme);
+	else themeQuery.addListener(updateMapTheme);
+	document.addEventListener('resume', updateMapTheme);
+	map.on('unload', function () {
+		if (themeQuery.removeEventListener) themeQuery.removeEventListener('change', updateMapTheme);
+		else themeQuery.removeListener(updateMapTheme);
+		document.removeEventListener('resume', updateMapTheme);
+	});
 
     return map;
 }
