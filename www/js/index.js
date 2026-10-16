@@ -218,7 +218,7 @@ function settingsInit(){
 		if(result.success){
 			setting.set("loginUser", email);
 			setting.set("loginKey", result.loginKey);
-			await Firebase.reportCurrentToken();
+			await firebase.reportCurrentToken();
 			const result2 = await websocketManager.login(result.loginKey);
 			ui.login(result2.user);
 			const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
