@@ -209,7 +209,7 @@ function settingsInit(){
 	document.getElementById("pga").addEventListener("change",(e) => {
     	setting.set("pga", e.target.checked);
 	})
-	document.getElementById("login_btn").addEventListener("click",async () => {
+	document.getElementById("login_btn").addEventListener("click", async () => {
 		document.getElementById("login_btn").innerText = "登入中...";
 		document.getElementById("login_btn").disabled = true;
 		const email = document.getElementById("email").value;
@@ -218,6 +218,7 @@ function settingsInit(){
 		if(result.success){
 			setting.set("loginUser", email);
 			setting.set("loginKey", result.loginKey);
+			await Firebase.reportCurrentToken();
 			const result2 = await websocketManager.login(result.loginKey);
 			ui.login(result2.user);
 			const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
@@ -272,7 +273,7 @@ async function onDeviceReady(){
 
 	/*----------firebase----------*/
 	if(window.cordova){
-		firebase.init();
+		firebase.init("https://rptes.com", () => {setting.get("loginKey")});
 		
 		if(setting.get("eew_tw")){
 			firebase.subscribeTopic("eew_tw")

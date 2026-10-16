@@ -1,3 +1,7 @@
+let tokenServer = "";
+let getVerifyKey = () => null;
+let initialized = false;
+
 function setupAndroidNotificationChannels() {
     if (cordova.platformId !== "android") return;
 
@@ -65,46 +69,57 @@ function requestNotificationPermission(permissions) {
     );
 }
 
-export function init(){
+export function init(server, verifyKeyGetter){
+    tokenServer = server;
+    getVerifyKey = verifyKeyGetter;
+
+    if(initialized) return;
+    initialized = true;
+
     const permissions = cordova.plugins.permissions;
 
-    // Android 13+ 通知權限
-    if (cordova.platformId === "android") {
+    // Android 通知權限
+    if(cordova.platformId === "android"){
         permissions.checkPermission(
             permissions.POST_NOTIFICATIONS,
-            function (status) {
-                if (status.hasPermission) {
-                    //setupFCM();
+            function(status){
+                if(status.hasPermission){
                     setupAndroidNotificationChannels();
-                } else {
+                }else{
                     requestNotificationPermission(permissions);
                 }
             },
-            function (err) {
+            function(err){
                 console.error("checkPermission error:", err);
             }
         );
     }
-    
-    //get token
-    FirebasePlugin.getToken(function (token) {
-        console.log("FCM Token:", token);
 
-        // 若仍使用 token 架構，可上傳到 server
-        // uploadTokenToServer(token);
+    // 啟動時取得並回報 token
+    void reportCurrentToken();
 
-    }, function (error) {
-        console.error("Token error:", error);
+    // Firebase 更新 token 時回報
+    FirebasePlugin.onTokenRefresh(function(token){
+        void reportTokenToServer(tokenServer, token, getVerifyKey());
+    }, function(error){
+        console.error("Token refresh error:", error);
     });
 
-    //onMessage
-    FirebasePlugin.onMessageReceived(function(message) {
+    // 回到前景或恢復網路時重新回報
+    document.addEventListener("resume", function(){
+        void reportCurrentToken();
+    }, false);
+
+    document.addEventListener("online", function(){
+        void reportCurrentToken();
+    }, false);
+
+    FirebasePlugin.onMessageReceived(function(message){
         console.log("Message received:", message);
 
-        if (message.tap) {
-            // 使用者點擊通知
+        if(message.tap){
             console.log("Notification tapped");
-        } else {
+        }else{
             // 前景收到通知
             //alert(message.body);
         }
@@ -133,31 +148,72 @@ function unsubscribeTopic(topic){
 	);
 }
 
-async function reportTokenToServer(server, token, user, verifyKey, ){
-    const platform = "";
-    const app_version = "";
-    const device_model = "";
-    const payload = {
-            user,
-            token,
-            platform,
-            app_version,
-            device_model
-    };
+async function reportCurrentToken(){
+    if(!initialized || !tokenServer || !getVerifyKey()) return false;
 
-    await fetch(`https://${server}/api/firebase/registerDevice`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
+    try{
+        const token = await new Promise((resolve, reject) => {
+            FirebasePlugin.getToken(resolve, reject);
+        });
+
+        return await reportTokenToServer(tokenServer, token, getVerifyKey());
+    }catch(error){
+        console.error("Token error:", error);
+        return false;
+    }
+}
+
+async function reportTokenToServer(server, token, verifyKey){
+    if(!server || !token || !verifyKey) return false;
+
+    const platform = cordova.platformId;
+    if(platform !== "android" && platform !== "ios") return false;
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try{
+        // 假設後端 router 掛載在 /api/firebase
+        const response = await fetch(`https://${server}/api/firebase/token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${verifyKey}`
+            },
+            body: JSON.stringify({
+                device_token: token,
+                platform: platform
+            }),
+            signal: controller.signal
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if(!response.ok || result.success !== true){
+            console.warn("Token 回報失敗:", {
+                status: response.status,
+                message: result.message || result.error || result.content
+            });
+            return false;
+        }
+
+        console.log("Token 回報成功");
+        return true;
+    }catch(error){
+        console.error("Token 回報失敗:",
+            error.name === "AbortError" ? "請求逾時" : error.message || error
+        );
+        return false;
+    }finally{
+        clearTimeout(timeout);
+    }
 }
 
 const Firebase = {
     init,
     subscribeTopic,
     unsubscribeTopic,
+    reportCurrentToken,
     reportTokenToServer
 };
 
