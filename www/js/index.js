@@ -273,7 +273,7 @@ async function onDeviceReady(){
 
 	/*----------firebase----------*/
 	if(window.cordova){
-		firebase.init("https://rptes.com", () => {setting.get("loginKey")});
+		firebase.init(server_url, () => setting.get("loginKey"));
 		
 		if(setting.get("eew_tw")){
 			firebase.subscribeTopic("eew_tw")

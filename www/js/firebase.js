@@ -149,7 +149,18 @@ function unsubscribeTopic(topic){
 }
 
 async function reportCurrentToken(){
-    if(!initialized || !tokenServer || !getVerifyKey()) return false;
+    if(!initialized){
+        console.debug("[Firebase] 跳過 token 回報：尚未初始化");
+        return false;
+    }
+    if(!tokenServer){
+        console.warn("[Firebase] 跳過 token 回報：未設定伺服器");
+        return false;
+    }
+    if(!getVerifyKey()){
+        console.debug("[Firebase] 跳過 token 回報：沒有登入憑證");
+        return false;
+    }
 
     try{
         const token = await new Promise((resolve, reject) => {
