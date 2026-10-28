@@ -401,7 +401,7 @@ class EEWTWUI {
         this.dom.innerHTML = `
             
 						<div class="eew_tile">
-                                <div class="local_expect">
+                            <!--<div class="local_expect">
                                     <div class="local_expect_shindo">
                                         <p style="margin-left: 10px;">預計震度:</p>
                                         <div style="width: 50%;">
@@ -414,7 +414,7 @@ class EEWTWUI {
                                             <h1 style="text-align: center;">3</h1>
                                         </div>
                                     </div>
-                                </div>
+                                </div>-->
                             
                                 <div class="eew_title">
                                     <h3 style="margin-bottom: 0;">緊急地震速報(台灣CWA)</h3>
