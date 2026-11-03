@@ -9,7 +9,7 @@ function setupAndroidNotificationChannels() {
         {
             id: "eew_alert",
             name: "地震速報",
-            description: "臺灣與日本地震速報",
+            description: "臺灣地震即時預警",
             importance: 4,
             vibration: [0, 500, 150, 500, 150, 1000],
             sound: "default",

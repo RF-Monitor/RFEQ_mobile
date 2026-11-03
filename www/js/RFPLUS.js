@@ -1,0 +1,538 @@
+const Flasher = {
+    state: false,
+    flashControl: true,
+    listeners: new Set(),
+    update(){
+        if(this.flashControl){
+            this.state = !this.state
+        }else{
+            this.state = false;
+        }
+        this.notify();
+		return this.state;
+	},
+    setState(state){
+        this.state = state;
+    },
+    start(){
+        this.flashControl = true;
+        console.log("[RFPLUS]Flasher start");
+    },
+    stop(){
+        this.flashControl = false;
+        console.log("[RFPLUS]Flasher stop");
+    },
+    subscribe(fn){
+        this.listeners.add(fn);
+        // 回傳 unsubscribe，方便解除
+        return () => this.listeners.delete(fn);
+    },
+    notify(){
+        for(const fn of this.listeners){
+            fn(this.state);
+        }
+    }
+};
+setInterval(
+    () => {
+        Flasher.update();
+    },
+    500
+)
+class RFPLUSManager {
+    constructor(map,locations,town_ID_list,town_line,leaflet,{onNewAlert, onAlertUpdate, onAlertEnd} = {}) {
+        this.instances = new Map(); // id → EEW
+        this.map = map;
+        this.locations = locations;
+        this.town_ID_list = town_ID_list;
+        this.town_line = town_line;
+        this.leaflet = leaflet;
+        this.onNewAlert = onNewAlert;
+        this.onAlertUpdate = onAlertUpdate;
+        this.onAlertEnd = onAlertEnd;
+    }
+
+    handleAlert(userlat, userlon, alert) {
+        if(alert.type == "none") return;
+        if (!this.instances.has(alert.id)) {
+            this.instances.set(alert.id, new RFPLUS(alert, new RFPLUSMapRenderer(this.map,this.locations,this.town_ID_list,this.town_line,this.leaflet), new RFPLUSUI));
+            alert = this.instances.get(alert.id).handleNew(userlat, userlon, alert);
+            this.onNewAlert?.(alert);
+        }else{
+            alert = this.instances.get(alert.id).handleUpdate(userlat, userlon, alert);
+            this.onAlertUpdate?.(alert)
+        }
+        
+    }
+
+    tick(now) {
+        for (const [key, EEW] of this.instances) {
+            EEW.updateCircleRadius(now);
+            if (EEW.checkExpired(now)) {
+                EEW.destroy();          // 清理地圖/UI
+                this.instances.delete(key);
+                this.onAlertEnd?.();
+            }
+        }
+    }
+
+    hasAlert(){
+        return this.instances.size > 0;
+    }
+
+}
+
+class RFPLUS {
+    constructor(alert, renderer, ui) {
+        this.alert = alert;
+        this.renderer = renderer;
+        //this.audio = new RFPLUSaudio();
+        this.ui = ui;
+        this.time = 0;
+        this.id = "";
+        this.center = {};
+        this.scale = 0;
+        this.rate = 0;
+        this.depth = 0;
+        this.report_num = 0;
+    }
+
+    handleNew(userlat, userlon, alert) {
+        this.alert = alert
+        //添加假想震央icon //初始化震波圓
+        //this.renderer.initAlert(this.alert);
+
+        //計算本地震度
+        const localPGA = this.RFPLUS_localPGA(userlat, userlon, this.alert.center.lat, this.alert.center.lon, {
+            scale: this.alert.scale,
+            rate: this.alert.rate,
+            depth: this.alert.center.depth
+        });
+        this.alert.localshindo = this.PGA2shindo(localPGA);
+
+        //計算各地震度
+        this.alert = this.renderer.renderShindo(this.alert);
+
+        //UI顯示
+        this.ui.init(this.alert);
+
+        // audio
+        //this.audio.init(this.alert);
+
+        return alert;
+    }
+
+    handleUpdate(userlat, userlon, alert) {
+        this.alert = alert
+        //更新假想震央icon//更新震波圓位置
+        //this.renderer.updateCenter(this.alert);
+        
+        //計算本地震度
+        const localPGA = this.RFPLUS_localPGA(userlat, userlon, this.alert.center.lat, this.alert.center.lon, {
+            scale: this.alert.scale,
+            rate: this.alert.rate,
+            depth: this.alert.center.depth
+        });        
+        this.alert.localshindo = this.PGA2shindo(localPGA);
+
+        //計算各地震度
+        this.alert = this.renderer.renderShindo(this.alert);
+
+        //UI顯示
+        this.ui.update(this.alert);
+
+        //audio
+        //this.audio.update(this.alert);
+
+        return alert;
+    }
+
+    updateCircleRadius(now) {
+        this.renderer.updateCircleRadius(this.alert, now);
+    }
+
+    checkExpired(now) {
+        if((now - this.alert.time) >= 180000){
+            
+            return true;
+        } // 3 分鐘
+        return false;
+    }
+    destroy(){
+        this.renderer.end();
+        this.ui.end();
+        //this.audio = null;
+    }
+
+    RFPLUS_localPGA(townlat,townlon,centerlat,centerlon,{scale = null, rate = null, depth = 10}){
+        let distance = Math.sqrt(Math.pow(Math.abs(townlat + (centerlat * -1)) * 111, 2) + Math.pow(Math.abs(townlon + (centerlon * -1)) * 101, 2) + Math.pow(depth, 2));
+        ///let distance = Math.sqrt(Math.pow(depth, 2) + Math.pow(surface, 2) + Math.pow(depth, 2));
+        let PGA = 0;
+        if(scale !== null && scale !== undefined){
+            PGA = (1.657 * Math.pow(Math.E, (1.533 * scale)) * Math.pow(distance, -1.607));
+        }else if(rate !== null && rate !== undefined){
+            PGA = rate * Math.pow(distance,-1.607);
+        } 
+        return PGA;
+    }
+    /*----------PGA轉震度----------*/
+    PGA2shindo(PGA){
+        let localcolor = '#63AA8B';
+        let localshindo = '0';
+        if (PGA >= 800) {
+            localshindo = "7";
+            localcolor = 'purple';
+        } else if (800 >= PGA && 440 < PGA) {
+            localshindo = "6+";
+            localcolor = '#A50021';
+        } else if (440 >= PGA && 250 < PGA) {
+            localshindo = "6-";
+            localcolor = 'red';
+        } else if (250 >= PGA && 140 < PGA) {
+            localshindo = "5+";
+            localcolor = '#ED1C24';
+        } else if (140 >= PGA && 80 < PGA) {
+            localshindo = "5-";
+            localcolor = '#FF7F27';
+        } else if (80 >= PGA && 25 < PGA) {
+            localshindo = "4";
+            localcolor = '#BAC000';
+        } else if (25 >= PGA && 8 < PGA) {
+            localshindo = "3";
+            localcolor = 'green';
+        } else if (8 >= PGA && 2.5 < PGA) {
+            localshindo = "2";
+            localcolor = '#0066CC';
+        } else if (2.5 >= PGA && 0.8 < PGA) {
+            localshindo = "1";
+            localcolor = 'gray';
+        } else {
+            localshindo = "0";
+        }
+        return localshindo;
+    }
+}
+
+class RFPLUSMapRenderer {
+    constructor(map,locations,town_ID_list,town_line,leaflet) {
+        this.map = map;
+        this.locations = locations;
+        this.town_ID_list = town_ID_list
+        this.country_list = ["基隆市", "臺北市", "新北市", "桃園市", "新竹縣", "新竹市", "苗栗縣", "臺中市", "彰化縣", "雲林縣", "嘉義縣", "嘉義市", "臺南市", "高雄市", "屏東縣", "臺東縣", "花蓮縣", "宜蘭縣", "澎湖縣", "金門縣", "連江縣", "南投縣"];
+        this.town_line = town_line
+        this.unsubscribeFlasher = Flasher.subscribe(
+            (state) => this.onFlashUpdate(state)
+        );
+        this.shindo_color = {
+            "0":"white",
+            "1":"white",
+            "2":"#0066CC",
+            "3":"green",
+            "4":"#BAC000",
+            "5-":"#FF7F27",
+            "5+":"#ED1C24",
+            "6-":"red",
+            "6+":"#A50021",
+            "7":"purple"
+        };
+        this.L = leaflet;
+        this.center = {
+            icon: null,
+            Pwave: null,
+            Swave: null
+        };
+    }
+
+    initAlert(alert) {
+        const icon = this.L.icon({iconUrl : 'shindo_icon/epicenter_tw.png',iconSize : [30,30],});
+        this.center.icon = this.L.marker([alert.center.lat,alert.center.lon],{icon : icon,opacity : 1.0}).addTo(this.map);
+        this.center.Pwave = this.L.circle([alert.center.lat,alert.center.lon],{color : 'blue' , radius:0 , fill : false,pane:"wave_layer"}).addTo(this.map);
+        this.center.Swave = this.L.circle([alert.center.lat,alert.center.lon],{color : 'red' , radius:0,pane:"wave_layer"}).addTo(this.map);
+    }
+
+    updateCenter(alert) {
+        this.center.icon?.setLatLng([alert.center.lat, alert.center.lon]);
+        this.center.Pwave?.setLatLng([alert.center.lat, alert.center.lon]);
+        this.center.Swave?.setLatLng([alert.center.lat, alert.center.lon]);
+    }
+
+    renderShindo(alert) {
+        let max_shindo = "0";
+        let time = alert["time"];
+        let id = alert["id"];
+        let center = alert["center"];
+        let depth = center.depth;
+        let scale = alert["scale"]; //RFPLUS3 only
+        let rate = alert["rate"]; //RFPLUS2 only
+        //----------檢查layer是否已創建(是)----------//
+        if(this.hasOwnProperty("shindoLayer")){
+            this.shindoLayer.clearLayers();
+        //----------若無 創建layer----------//
+        }else{
+            this.shindoLayer = this.L.layerGroup().addTo(this.map);
+        }
+        //----------各縣市----------//
+        for(let i = 0; i < this.country_list.length;i++){
+            //----------各鄉鎮市區----------//
+            for(var key of Object.keys(this.locations["towns"][this.country_list[i]])){
+                
+                let town_ID = null;
+                let townlat = this.locations["towns"][this.country_list[i]][key][1];
+                let townlon = this.locations["towns"][this.country_list[i]][key][2];
+                let countryname = this.country_list[i];
+                let townname = key;
+                for(let j = 0;j < this.town_ID_list.length;j++){
+                    if(countryname == this.town_ID_list[j]["COUNTYNAME"] && townname == this.town_ID_list[j]["TOWNNAME"]){
+                        town_ID = this.town_ID_list[j]["TOWNCODE"].toString();
+                    }
+                }
+                
+                //計算pga
+                let PGA = 0;
+                if(alert.type == "RFPLUS3" || alert.type == "eew-test"){
+                    PGA = this.localPGA(townlat,townlon,center["lat"],center["lon"],{scale, depth});
+                }else{
+                    PGA = this.localPGA(townlat,townlon,center["lat"],center["lon"],{rate});
+                }
+                
+                //確認震度顏色
+                let localshindo = this.PGA2shindo(PGA);
+                let localcolor = this.shindo_color[localshindo];
+                //console.log(localshindo);
+                //加入震度色塊
+                if(localshindo != "0"){
+                    let line = this.town_line[town_ID];
+                    
+                    this.shindoLayer.addLayer(this.L.geoJSON(line, { color:"#5B5B5B",fillColor: localcolor,weight:1,fillOpacity:1,pane:"RFPLUS_shindo_list_layer" }))
+                }
+                //判斷是否是最大震度
+                if(this.shindo2float(localshindo) > this.shindo2float(max_shindo)){max_shindo = localshindo;}
+
+            }
+        }
+        alert["max_shindo"] = max_shindo;
+        return alert;
+    }
+
+    updateCircleRadius(alert, now) {
+        const elapsed = now - alert["time"];
+        const P_radius = elapsed * 6;
+        const S_radius = elapsed * 3.5;
+
+        this.center.Pwave?.setRadius(P_radius);
+        this.center.Swave?.setRadius(S_radius);  
+    }
+    end(){
+        if (this.shindoLayer) {
+            this.map.removeLayer(this.shindoLayer);
+            this.shindoLayer.clearLayers();
+            this.shindoLayer = null;
+        }
+
+        if (this.center.icon) this.map.removeLayer(this.center.icon);
+        if (this.center.Pwave) this.map.removeLayer(this.center.Pwave);
+        if (this.center.Swave) this.map.removeLayer(this.center.Swave);
+
+        this.unsubscribeFlasher?.();
+    }
+
+    onFlashUpdate(state){
+        if (!this.shindoLayer) return;
+
+        const opacity = state ? 1 : 0;
+
+        this.shindoLayer.eachLayer(layer => {
+            if (layer.setStyle) {
+                layer.setStyle({ fillOpacity: opacity });
+            }
+        });
+    }
+
+    localPGA(townlat,townlon,centerlat,centerlon,{scale = null, rate = null, depth = 10}){
+        let distance = Math.sqrt(Math.pow(Math.abs(townlat + (centerlat * -1)) * 111, 2) + Math.pow(Math.abs(townlon + (centerlon * -1)) * 101, 2) + Math.pow(depth, 2));
+        ///let distance = Math.sqrt(Math.pow(depth, 2) + Math.pow(surface, 2) + Math.pow(depth, 2));
+        let PGA = 0;
+        if(scale !== null && scale !== undefined){
+            PGA = (1.657 * Math.pow(Math.E, (1.533 * scale)) * Math.pow(distance, -1.607));
+        }else if(rate !== null && rate !== undefined){
+            PGA = rate * Math.pow(distance,-1.607);
+        } 
+        return PGA;
+    }
+
+    PGA2shindo(PGA){
+        let localcolor = '#63AA8B';
+        let localshindo = '0';
+        if (PGA >= 800) {
+            localshindo = "7";
+            localcolor = 'purple';
+        } else if (800 >= PGA && 440 < PGA) {
+            localshindo = "6+";
+            localcolor = '#A50021';
+        } else if (440 >= PGA && 250 < PGA) {
+            localshindo = "6-";
+            localcolor = 'red';
+        } else if (250 >= PGA && 140 < PGA) {
+            localshindo = "5+";
+            localcolor = '#ED1C24';
+        } else if (140 >= PGA && 80 < PGA) {
+            localshindo = "5-";
+            localcolor = '#FF7F27';
+        } else if (80 >= PGA && 25 < PGA) {
+            localshindo = "4";
+            localcolor = '#BAC000';
+        } else if (25 >= PGA && 8 < PGA) {
+            localshindo = "3";
+            localcolor = 'green';
+        } else if (8 >= PGA && 2.5 < PGA) {
+            localshindo = "2";
+            localcolor = '#0066CC';
+        } else if (2.5 >= PGA && 0.8 < PGA) {
+            localshindo = "1";
+            localcolor = 'gray';
+        } else {
+            localshindo = "0";
+        }
+        return localshindo;
+    }
+    shindo2float(shindo){
+        if(shindo == "5-"){
+            shindo = "5"
+        }
+        if(shindo == "5+"){
+            shindo = "5.5"
+        }
+        if(shindo == "6-"){
+            shindo = "6"
+        }
+        if(shindo == "6+"){
+            shindo = "6.5"
+        }
+        return parseFloat(shindo);
+    }
+}
+
+class RFPLUSUI {
+    constructor() {
+        this.dom = null; // 存放對應這筆 eew 的 DOM 節點
+        
+    }
+    init(alert) {
+        const container = document.getElementById("RFPLUS_list");
+
+        const div = document.createElement("div");
+        div.className = "RFPLUS";
+        div.id = `eew-${alert.id}`;
+        div.innerHTML = `
+                            <div class="eew_tile">
+                                <!--
+                                <div class="local_expect">
+                                    <div class="local_expect_shindo">
+                                        <p style="margin-left: 10px;">預計震度:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">5強</h1>
+                                        </div>
+                                    </div>
+                                    <div class="local_expect_time">
+                                        <p style="margin-left: 10px;">剩餘秒數:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">3</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+                                <div class="eew_title">
+                                    <h3 style="margin-bottom: 0;">緊急地震速報(RFPLUS)${alert.report_num}</h3>
+                                </div>
+                                <div class="eew_content">
+                                    <div class="eew_maxShindo">
+                                        <h4 align="center" style="margin: 0;">最大震度</h4>
+                                        <img src="img/shindo/${alert.max_shindo}.png" style="width:100%;">
+                                    </div>
+                                    <div class="eew_details">
+                                        <h1 style="margin-bottom: 0;">${alert.center.cname}</h1>
+                                        <p>${formatTimestamp(alert.time)}</p>
+                                        <div style="display: flex;flex-wrap: nowrap;">
+                                            <div style="width: 50%;">
+                                                <h1 align="left" style="margin-top: 10px;">M${alert.scale.toFixed(1)}</h1>
+                                            </div>
+                                            <div style="width: 50%;">
+                                                <h1 align="right" style="margin-top: 10px;">${alert.center.depth}KM</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+					
+        `;
+
+        container.appendChild(div);
+        this.dom = div;
+    }
+    update(alert) {
+        if (!this.dom) this.init(alert);
+                this.dom.innerHTML = `
+                            <div class="eew_tile">
+                                <!--
+                                <div class="local_expect">
+                                    <div class="local_expect_shindo">
+                                        <p style="margin-left: 10px;">預計震度:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">5強</h1>
+                                        </div>
+                                    </div>
+                                    <div class="local_expect_time">
+                                        <p style="margin-left: 10px;">剩餘秒數:</p>
+                                        <div style="width: 50%;">
+                                            <h1 style="text-align: center;">3</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+                                <div class="eew_title">
+                                    <h3 style="margin-bottom: 0;">緊急地震速報(RFPLUS)${alert.report_num}</h3>
+                                </div>
+                                <div class="eew_content">
+                                    <div class="eew_maxShindo">
+                                        <h4 align="center" style="margin: 0;">最大震度</h4>
+                                        <img src="img/shindo/${alert.max_shindo}.png" style="width:100%;">
+                                    </div>
+                                    <div class="eew_details">
+                                        <h1 style="margin-bottom: 0;">${alert.center.cname}</h1>
+                                        <p>${formatTimestamp(alert.time)}</p>
+                                        <div style="display: flex;flex-wrap: nowrap;">
+                                            <div style="width: 50%;">
+                                                <h1 align="left" style="margin-top: 10px;">M${alert.scale.toFixed(1)}</h1>
+                                            </div>
+                                            <div style="width: 50%;">
+                                                <h1 align="right" style="margin-top: 10px;">${alert.center.depth}KM</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+					
+        `;
+    }
+    end(){
+        if (!this.dom) return;
+
+        this.dom.remove();   // 從 DOM tree 移除
+        this.dom = null;
+    }
+}
+
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+
+  const YYYY = date.getFullYear();
+  const MM = String(date.getMonth() + 1).padStart(2, '0'); // 月份從0開始
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+
+  return `${YYYY}-${MM}-${dd} ${hh}:${mm}:${ss}`;
+}
+
+export { RFPLUSManager, Flasher};

@@ -4,6 +4,7 @@
 import { timestampNow } from "./time.js";
 import setting from "./setting.js";
 let EEWManager = null
+let RFPLUSManager = null
 let reportManager = null;
 let stationManager = null;
 let socket = null
@@ -18,8 +19,9 @@ let location = {
 	"lon": 121.02
 } 
 
-function ws_init(EEW,report,station){
+function ws_init(EEW,RFPLUS,report,station){
 	EEWManager = EEW;
+	RFPLUSManager = RFPLUS;
 	reportManager = report;
 	stationManager = station;
 }
@@ -86,8 +88,11 @@ export function ws_connect(){
 			}
 			*/
 			
-			if(data["type"] == "RFPLUS3"){
-				console.log("RFPLUS3 recieved")
+			if(data["type"] == "RFPLUS3" && setting.get("RFPLUS")){
+				console.log(data["content"])
+				if(timestampNow(0) - data.content.time < 180000){
+					RFPLUSManager.handleAlert(location.lat, location.lon, data.content);
+				}
 			}
 			
 			//地震報告

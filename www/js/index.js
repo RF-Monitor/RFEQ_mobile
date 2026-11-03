@@ -1,4 +1,5 @@
 import { EEWTWManager } from "./EEW_TW.js";
+import { RFPLUSManager, Flasher as RFPLUSFlasher } from "./RFPLUS.js";
 import websocketManager from "./websocket.js";
 import { locations } from "./locations.js";
 import { reportManager } from "./reports.js";
@@ -400,9 +401,26 @@ async function onDeviceReady(){
 	ui.startClock()
 
 	/*----------主要功能處理----------*/
-    let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L);
+    let EEW = new EEWTWManager(map,locations,town_ID_list,town_line,L,{
+		onNewAlert: () => {
+			RFPLUSFlasher.stop();
+		},
+		onAlertEnd: () => {
+			if(EEW.hasAlert()){
+				RFPLUSFlasher.stop();
+				RFPLUSFlasher.setState(false);
+			}else{
+				RFPLUSFlasher.start();
+			}
+		}
+	});
 	setInterval(() => {
 		EEW.tick(Date.now())
+	},100);
+
+	let RFPLUS = new RFPLUSManager(map,locations,town_ID_list,town_line,L);
+	setInterval(() => {
+		RFPLUS.tick(Date.now())
 	},100);
 
 	let report = new reportManager(map2);
@@ -421,7 +439,7 @@ async function onDeviceReady(){
 
 	/*----------websocket連線----------*/
 	ui.loggingin();
-	websocketManager.ws_init(EEW,report,Station);
+	websocketManager.ws_init(EEW,RFPLUS,report,Station);
 	websocketManager.onStatus((status) =>{
 		ui.showServerStatus(status);
 	})
