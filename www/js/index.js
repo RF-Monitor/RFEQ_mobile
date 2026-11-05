@@ -10,7 +10,7 @@ import auth from "./auth.js";
 import myRFsensorHandler from "./myRFsensor.js";
 import ui from "./ui.js";
 import { initializePurchase } from "./purchase.js";
-import { syncNTP } from "./time.js";
+import { syncNTP, timestampNow } from "./time.js";
 const server_url = "rptes.com";
 
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -415,12 +415,12 @@ async function onDeviceReady(){
 		}
 	});
 	setInterval(() => {
-		EEW.tick(Date.now())
+		EEW.tick(timestampNow(0))
 	},100);
 
 	let RFPLUS = new RFPLUSManager(map,locations,town_ID_list,town_line,L);
 	setInterval(() => {
-		RFPLUS.tick(Date.now())
+		RFPLUS.tick(timestampNow(0))
 	},100);
 
 	let report = new reportManager(map2);
