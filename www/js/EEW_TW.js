@@ -1,3 +1,4 @@
+
 class EEWTWManager {
     constructor(map,locations,town_ID_list,town_line,leaflet,{onNewAlert, onAlertUpdate, onAlertEnd} = {}) {
         this.instances = new Map(); // id → EEW
@@ -245,7 +246,7 @@ class EEWTWMapRenderer {
                 if(localshindo != "0"){
                     let line = this.town_line[town_ID];
                     //console.log(town_line[[town_ID]])
-                    this.shindoLayer.addLayer(this.L.geoJSON(line, { color:"#5B5B5B",fillColor: localcolor,weight:1,fillOpacity:1,pane:"RFPLUS_shindo_list_layer" }))
+                    this.shindoLayer.addLayer(this.L.geoJSON(line, { color:"#5B5B5B",fillColor: localcolor,weight:1,fillOpacity:1,pane:"eew_tw_shindo_list_layer" }))
                 }
                 //判斷是否是最大震度
                 if(this.shindo2float(localshindo) > this.shindo2float(max_shindo)){max_shindo = localshindo;}
