@@ -349,13 +349,14 @@ async function onDeviceReady(){
 			myRFsensorList.localList = [];
 
 			// 立即開始搜尋，不等待，也先處理搜尋失敗
+			/*
 			const localStationPromise = myRFsensorHandler.searchLocalStations().then(
 				stations => ({ success: true, stations }),
 				err => {
 					console.error("搜尋內網測站失敗：", err);
 					return { success: false };
 				}
-			);
+			);*/
 
 			try{
 				const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
@@ -384,11 +385,12 @@ async function onDeviceReady(){
 			}
 
 			// 雲端已顯示，等待內網搜尋結果後更新
+			/*
 			const result = await localStationPromise;
 			if(result.success){
 				myRFsensorList.localList = result.stations || [];
 				myRFsensorList.render();
-			}
+			}*/
 		}else{
 			myRFsensorList.renderNotLoggedIn();
 		}
@@ -448,6 +450,33 @@ async function onDeviceReady(){
 		const result = await websocketManager.login(setting.get("loginKey"));
 		if(result.status == "success"){
 			ui.login(result.user);
+			// 預先取得登入狀態，並渲染到 UI
+			const loginStatus = await auth.getLoginStatus(setting.get("loginKey"), server_url);
+			ui.renderLoginStatus(loginStatus.content)
+			console.log(loginStatus)
+
+			// 預先取得我的 RF-sensor 列表，並渲染到 UI
+			const RFsensorList = await myRFsensorHandler.getMyRFsensor(server_url, setting.get("loginKey"));
+			const data = await websocketManager.getLatestPGA();
+			const sensors = await Promise.all(
+				RFsensorList.map(async (sensor) => {
+					const id = sensor.id;
+
+					sensor.data = data.data.find((station) => {
+						return station.id == id;
+					});
+					sensor.triggerList = await myRFsensorHandler.getRFsensorTriggerList(server_url, id);
+
+					return sensor;
+				})
+			);
+
+			sensors.sort((a, b) => {
+				return String(a.id).localeCompare(String(b.id), undefined, { numeric: true });
+			});
+
+			myRFsensorList.list = sensors;
+			myRFsensorList.render();
 		}else{
 			ui.logout();
 		}
